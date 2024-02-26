@@ -1,7 +1,7 @@
 1) Benutzereingabe
 - Benutzereingabe initiieren: Das Programm beginnt mit einer Nachricht an den Benutzer, in der er aufgefordert wird, den Suchbegriff einzugeben.
 - Eingabe lesen: Das Programm liest die Eingabe, die der Benutzer über die Tastatur macht.
-- Eingabe speichern: Die eingegebene Zeichenkette (der Suchbegriff) wird in einer Variablen gespeichert, damit sie später im Suchprozess verwendet werden kann.
+- Eingabe speichern: Die eingegebene Zeichenkette (der Suchbegriff) wird in einer .txt Datei gespeichert, damit sie später im Suchprozess verwendet werden kann.
 2) Suchfunktion
 - Lesen der Textdatei: Öffnen und Lesen der Inhalte einer Textdatei, die durchsucht werden soll.
 - Suche nach dem Suchbegriff: Durchgehen des Textes, um zu überprüfen, ob und wo der Suchbegriff vorkommt.
