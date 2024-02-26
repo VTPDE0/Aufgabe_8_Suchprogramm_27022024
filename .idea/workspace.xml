@@ -4,18 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a61c0ffc-ddba-4409-acad-401f02cbfd90" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Aufgabe, Ziele und Verlauf.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Benutzereingabe.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Logik.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Notizen.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion.java" afterDir="false" />
+    <list default="true" id="a61c0ffc-ddba-4409-acad-401f02cbfd90" name="Changes" comment="v0.1">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Textanalyse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Benutzereingabe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Benutzereingabe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Logik.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Logik.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +53,8 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/ORDIX/Projekte IntelliJ/Textanalyse-Anwendung",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/ORDIX/Projekte IntelliJ/ZahlRatenSpiel",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
@@ -73,6 +70,21 @@
       <option name="presentableId" value="Default" />
       <updated>1708938612956</updated>
     </task>
+    <task id="LOCAL-00001" summary="v0.1">
+      <created>1708954079644</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1708954079644</updated>
+    </task>
+    <task id="LOCAL-00002" summary="v0.1">
+      <created>1708954094018</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1708954094018</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -85,6 +97,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="v0.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.1" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

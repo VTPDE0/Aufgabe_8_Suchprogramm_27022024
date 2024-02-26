@@ -1,15 +1,15 @@
 package org.example;
 import java.util.Scanner;
 
-
 public class Benutzereingabe {
-    private String suchbegriff;
-    public void leseEingabe () {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Bitte geben Sie einen Suchbegriff ein:");
-        suchbegriff = scanner.nextLine();
+    private Scanner scanner;
+
+    public Benutzereingabe() {
+        scanner = new Scanner(System.in);
     }
-    public String getSuchbegriff(){
-        return suchbegriff;
+
+    public String leseSuchbegriff() {
+        System.out.println("Bitte geben Sie einen Suchbegriff ein:");
+        return scanner.nextLine();
     }
 }
