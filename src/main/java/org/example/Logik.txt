@@ -1,0 +1,17 @@
+1) Benutzereingabe
+- Benutzereingabe initiieren: Das Programm beginnt mit einer Nachricht an den Benutzer, in der er aufgefordert wird, den Suchbegriff einzugeben.
+- Eingabe lesen: Das Programm liest die Eingabe, die der Benutzer über die Tastatur macht.
+- Eingabe speichern: Die eingegebene Zeichenkette (der Suchbegriff) wird in einer Variablen gespeichert, damit sie später im Suchprozess verwendet werden kann.
+2) Suchfunktion
+- Lesen der Textdatei: Öffnen und Lesen der Inhalte einer Textdatei, die durchsucht werden soll.
+- Suche nach dem Suchbegriff: Durchgehen des Textes, um zu überprüfen, ob und wo der Suchbegriff vorkommt.
+- Ergebnis der Suche: Rückgabe von Informationen darüber, ob der Suchbegriff gefunden wurde und an welcher Stelle oder in welchen Zeilen der Textdatei der Begriff erscheint.
+3) Textanalyse
+- Zählen der Vorkommen des Suchbegriffs: Ermitteln, wie oft der Suchbegriff im gegebenen Text vorkommt.
+- Analyse der Textstruktur:
+    - Anzahl der Wörter: Bestimmen, wie viele Wörter im Text vorhanden sind.
+    - Anzahl der Zeilen: Ermitteln der Zeilenzahl im Text, falls der Text mehrzeilig ist.
+    - Durchschnittliche Wortlänge: Berechnen der durchschnittlichen Länge der Wörter im Text.
+- Erweiterte Funktionen basierend auf Anforderungen:
+    - Häufigkeitsanalyse bestimmter Wörter oder Phrasen: Neben dem Haupt-Suchbegriff kann es nützlich sein, auch die Häufigkeit anderer relevanter Wörter oder Phrasen zu analysieren.
+    - Identifizierung und Analyse von Schlüsselwörtern: Bestimmte Schlüsselwörter könnten für die Analyse besonders relevant sein.
