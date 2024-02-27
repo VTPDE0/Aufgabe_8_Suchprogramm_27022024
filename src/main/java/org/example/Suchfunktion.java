@@ -10,7 +10,7 @@ public class Suchfunktion {
                 this.dateipfad = dateipfad;
         }
 
-        public boolean sucheNachBegriff(String suchbegriff) throws FileNotFoundException {
+        boolean sucheNachBegriff(String suchbegriff) throws FileNotFoundException {
                 Scanner dateiScanner = new Scanner(new File(dateipfad));
                 while (dateiScanner.hasNextLine()) {
                         if (dateiScanner.nextLine().contains(suchbegriff)) {
