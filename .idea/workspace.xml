@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a61c0ffc-ddba-4409-acad-401f02cbfd90" name="Changes" comment="v0.2">
+      <change afterPath="$PROJECT_DIR$/Aufgabe_8- Erstellung eines einfachen Suchprogramms.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BeispieltextInDatei.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion_mit_Kontextanzeige.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/_Aufgabe, Ziele und Verlauf.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Aufgabe, Ziele und Verlauf.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Benutzereingabe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Benutzereingabe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Logik.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/_Logik.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Notizen.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/_Notizen.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Suchfunktion.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Textanalyse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Textanalyse.java" afterDir="false" />
     </list>
@@ -41,18 +49,21 @@
     </option>
   </component>
   <component name="ProjectId" id="2ctlAI23JW0Oag6lvBw2hiryj6z" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "last_opened_file_path": "C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/ORDIX/Projekte IntelliJ/Aufgabe_8_Suchprogramm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "vcs.Git"
@@ -112,7 +123,14 @@
       <option name="project" value="LOCAL" />
       <updated>1709019276050</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="v0.2">
+      <created>1709037736507</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1709037736507</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -127,6 +145,7 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="v0.1" />
     <MESSAGE value="v0.2" />
     <option name="LAST_COMMIT_MESSAGE" value="v0.2" />

@@ -1,0 +1,1524 @@
+ich weiß
+BeispieltextInDatei.txt
+Ziel
+Java - Hilfe | Java-Forum.org
+ 
+Foren 
+Was ist neu 
+AnmeldenRegistrieren Suche
+Neue Beiträge 
+Foren durchsuchen
+Foren Java - Programmierung Java Basics - Anfänger-Themen 
+Daten aus .txt Datei einlesen und weiterverarbeiten
+ Themenstartermaxmuster987  Beginndatum1. Sep 2022
+1
+2
+ Nächste
+maxmuster987
+Aktives Mitglied
+1. Sep 2022
+#1
+Ich weiß, wie man Daten aus .txt Dateien einliest und ausgibt, aber ich weiß noch nicht, wie man diese Daten weiterverarbeitet.
+Der Benutzer soll den Dateinamen eingeben ohne die Endung .txt .
+Danach soll geprüft werden, ob die jeweilige Datei mit der Zeichenfolge DATA: startet.
+Wenn dem so ist, dann sollen weitere Schritte fortgesetzt werden (aber dazu später, erst einmal will ich einlesen und verarbeiten).
+Wenn der Benutzer einen Dateinamen eingibt, den es nicht gibt, dann soll eine Fehlermeldung ausgegeben werden.
+
+Das Programm unten ist nur zum Einlesen und Ausgeben gedacht.
+
+Wenn jetzt die Datei bspw. test.txt mit DATA: startet, dann kann weitergearbeitet werden.
+
+Hinter DATA: 10 steht eine Zahl, die die Länge des arrays am Ende wiedergibt.
+
+Da drunter stehen dann Zeilen in Form von:
+DATA: 10
+19:00, 12.23
+20:20, 10.00
+...
+...
+
+Und diese Daten will ich einlesen UND verarbeiten.
+Die erste Zahl steht für die Uhrzeit und die zweite Zahl für eine Geschwindigkeit (Format bleibt in jeder Zeile identisch).
+Diese will ich in einem array speichern, um darauf zurückzugreifen, um die nötigen Berechnungen machen zu können.
+
+
+Java:In die Zwischenablage kopieren
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Uebung {
+    public static void main (String[] args) throws Exception {
+        String eingabe = "";
+        eingabe = JOptionPane.showInputDialog("Dateiname: ");
+       
+        try {
+            File doc = new File(eingabe+".txt");
+            BufferedReader obj = new BufferedReader(new FileReader(doc));
+           
+            String strng;
+            while((strng=obj.readLine()) != null)
+                System.out.println(strng);
+        }
+        catch(FileNotFoundException e) {
+            System.out.println("Dateiname nicht existent.");
+        }
+    }
+
+   
+   
+   
+}
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+1. Sep 2022
+#2
+Also erst einmal solltest Du try with resources verwenden, damit so ein Reader auch wieder geschlossen wird. Das sieht dann so aus:
+Java:In die Zwischenablage kopieren
+        try (BufferedReader obj = new BufferedReader(new FileReader(eingabe+".txt"))) {
+            String strng;
+            while((strng=obj.readLine()) != null)
+                System.out.println(strng);
+        }
+        catch(FileNotFoundException e) {
+            System.out.println("Dateiname nicht existent.");
+        }
+    }
+
+Da aber dann:
+- Sinnvolle Namen! obj und strng sagen ja absolut nichts aus! Von mir aus reader oder so für den Reader auf der Datei und das andere ist eine Zeile der Datei so dass man das line nennen könnte. Und eingabe - was wurde da eingegeben? Das ist dann filename oder so.
+
+Und die gelesene Zeile willst Du dann verarbeiten -> dann mach das in einer Methode und schon hast Du:
+Code:In die Zwischenablage kopieren
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename+".txt"))) {
+            String line;
+            while((line=obj.readLine()) != null)
+                verarbeite(line);
+        }
+        catch(FileNotFoundException e) {
+            System.out.println("Dateiname nicht existent.");
+            e.printStackTrace();
+        }
+
+Und in der Methode verarbeite kannst Du dann schauen: Fängt die Zeile mit DATA an? Oder hat sie das andere Format? Das kann man dann schauen, wie Du das auswertest. Das kann man zur Not von Hand machen oder man nutzt reguläre Ausdrücke. Man könnte auf der Zeile auch einen Scanner erzeugen und da dann jeweils die Separatoren setzen um die Zahlen einzulesen: Dann sind es 2 int und ein double Wert oder so.
+==> Das ist aber ein eigenständiges Problem. Das ist ja der Sinn mit den Methoden. Teile und Herrsche! Du liest die Zeilen und verarbeitest diese. Das macht der Code. Die eigentliche Verarbeitung fehlt aber noch.
+Antwort
+Neumi5694
+Neumi5694
+Top Contributor
+1. Sep 2022
+#3
+Noch wichtig: Trennen, trennen, trennen.
+In der Main-Methode einlesen ... technisch ok, von der Übersicht her Unsinn.
+Besser: Eine Methode schreiben, die nichts anderes macht, als die Datei einzulesen. Rückgabewert ist eine Liste von Strings.
+Dann kannst du diese Liste weiterverarbeiten.
+Antwort
+Oneixee5
+Oneixee5
+Top Contributor
+2. Sep 2022
+#4
+Oder mit der NIO-API:
+Java:In die Zwischenablage kopieren
+try (Stream<String> lines =  Files.lines(Path.of(eingabe + ".txt"), StandardCharsets.UTF_8)) {
+    lines.forEach(MeineKlasse::verarbeite);
+} catch(FileNotFoundException e) {
+    System.out.println("Dateiname nicht existent.");
+}
+
+private void verarbeite(final String line) {
+    // ...
+}
+Java:In die Zwischenablage kopieren
+try {
+    List<String> lines =  Files.readAllLines(Path.of(eingabe + ".txt"), StandardCharsets.UTF_8);
+    verarbeite(lines);
+} catch(final FileNotFoundException e) {
+    System.out.println("Dateiname nicht existent.");
+}
+Java:In die Zwischenablage kopieren
+try {
+    String content =  Files.readString(Path.of(eingabe + ".txt"), StandardCharsets.UTF_8);
+    verarbeite(content);
+} catch(final FileNotFoundException e) {
+    System.out.println("Dateiname nicht existent.");
+}
+Das ist viel übersichtlicher.
+Antwort
+Like Reactions:KonradN
+maxmuster987
+Aktives Mitglied
+2. Sep 2022
+#5
+KonradN hat gesagt.:
+Sinnvolle Namen! obj und strng sagen ja absolut nichts aus!
+Ich habe das aus einer anderen Website gezogen und wusste nicht genau, was die einzelnen Sachen bedeuten sollen, deswegen habe ich die auch nicht umbenannt, weil sie das getan hatten, was ich wollte, ohne es zu hinterfragen. 🙄
+
+Jetzt bin ich überfordert, womit ich das eher lösen soll. Mit der angesprochenen NIO API oder weiterhin mit dem BufferedReader?
+Oneixee5 hat gesagt.:
+Oder mit der NIO-API:
+Sind die 3 Abschnitte Teil des Programms oder ist jeder einzelne Abschnitt einfach eine andere Darstellungsweise, um das Problem zu lösen?
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+2. Sep 2022
+#6
+maxmuster987 hat gesagt.:
+Jetzt bin ich überfordert, womit ich das eher lösen soll. Mit der angesprochenen NIO API oder weiterhin mit dem BufferedReader?
+Das ist aus meiner Sicht von Deiner Situation abhängig. Darauf gehe ich am Ende etwas ein.
+
+maxmuster987 hat gesagt.:
+Sind die 3 Abschnitte Teil des Programms oder ist jeder einzelne Abschnitt einfach eine andere Darstellungsweise, um das Problem zu lösen?
+Das sind einfach mehrere Möglichkeiten, wie es gehen könnte. Was man da genau nehmen will, muss man für sich entscheiden. Beim lernen von Java wird oft lange auf java.nio verzichtet was relativ schade ist. Ich erachte es als durchaus wichtig. Wenn Du aber gerade einen Java Kurs machst und dieser Kurs auch auf java.nio verzichtet, dann würde ich das erst einmal weglassen und mir rein die Dinge ansehen, die den Kurs betreffen. Wenn Du in den Dingen sicher bist, dann sollte der Blick über den Tellerrand kommen.
+
+Wenn Du Streams kennst, dann ist die erste Variante, die vorgestellt wurde, wie sinnvolle. Darüber wird sowas in der Regel gemacht (aus meiner Sicht, die ist aber sehr subjektiv!) Da kommt dann aber auch noch hinzu, dass da ein try with resources verwendet wurde. Stream<T> hat das in der Dokumentation auch direkt beschrieben:
+Streams have a BaseStream.close() method and implement AutoCloseable. Operating on a stream after it has been closed will throw IllegalStateException. Most stream instances do not actually need to be closed after use, as they are backed by collections, arrays, or generating functions, which require no special resource management. Generally, only streams whose source is an IO channel, such as those returned by Files.lines(Path), will require closing. If a stream does require closing, it must be opened as a resource within a try-with-resources statement or similar control structure to ensure that it is closed promptly after its operations have completed.
+
+Das nur als kleiner Wink mit den Zaunpfahl: Hier kommen einige Dinge zusammen, die beachtet werden müssen und die bekannt sein sollten. Einfach mal ein Gegenpol zu "ich mache einen Kurs": Wenn du keinen Kurs machst sondern irgendwo als Junior Software Engineer angefangen haben solltest: Dann sind das Dinge, die wichtig sind und da solltest Du Dich direkt hinsetzen und Dir diese im Detail erarbeiten und damit rumspielen. 8Und dafür solltest Du auch die Zeit haben / bekommen.
+Antwort
+Neumi5694
+Neumi5694
+Top Contributor
+2. Sep 2022
+#7
+maxmuster987 hat gesagt.:
+Jetzt bin ich überfordert, womit ich das eher lösen soll. Mit der angesprochenen NIO API oder weiterhin mit dem BufferedReader?
+Das ist letztendlich deine Entscheidung. Mit dem Buffered Reader liest du selbst manuell ein, nio hat vorgefertigte Methoden.
+
+Ich vergess immer wieder, dass es nio gibt, greife stattdessen auf meine selbst geschriebenen Methoden zu, die teils noch aus der Zeit vor nio stammen.
+Persönlich bin ich der Auffassung, Zugriffe sollten so kurz und kompakt wie möglich gehalten werden, weshalb ich das Einlesen der Datei als Stringliste (erst nach Schließen der Datei auswerten) gegenüber der "live" Stream Variante bevorzuge.
+Nichts ist lästiger, als sich um einen IO Fehler kümmern zu müssen, wenn man schon am Berechnen und Auswerten ist.
+Womöglich muss man dann die bereits berechneten/angezeigten/angewendeten Teilergebnisse wieder entfernen, was viel lustiger klingt, als es ist.
+
+Aber hier mögen sich die Geister scheiden. Es scheint mir, du würdest einen Anfängerkurs machen, also halt es so einfach wie möglich (was auch grundsätzlich eine gute Idee für später wird).
+Schreib also erst mal irgendwas, was deine Strings einliest ohne sie (nur) auf dem Bildschirm auszugeben. Sie müssen irgendwo für die Weiterverarbeitung zwischengespeichert werden.
+Antwort
+maxmuster987
+Aktives Mitglied
+2. Sep 2022
+#8
+KonradN hat gesagt.:
+Wenn Du aber gerade einen Java Kurs machst und dieser Kurs auch auf java.nio verzichtet
+Der verzichtet tatsächlich aktuell komplett auf java.nio.
+
+Momentan bin ich bei Streams allgemein, also character-Streams und Filter-Streams (Puffer-Streams).
+Filter-Streams sind Datenpuffer, in denen Daten zur Verarbeitung zwischengelagert und verändert werden können. Darunter fallen BufferedReader oder BufferedWriter. Das habe ich momentan gelernt bzw. bin dran.
+Mit FileReader lese ich die Dateien ein und mit BufferedReader speicher ich sie zwischen, um sie für die Weiterverarbeitung verwenden zu können.
+
+Aus dem Grund hab ich mich dann zu aktuellem Zeitpunkt entschieden, dann doch auf java.nio zu verzichten und erst einmal über diesen Weg das Ganze zu lösen.
+
+Ich hab das Ganze von oben mal bisschen auseinandergezogen, damit das für mich übersichtlicher ist, anstatt alles in den Klammern verschachtelt zu haben.
+In Zeile 21, was muss ich da als Rückgabewert hinschreiben? Bisher war es meistens double oder so was, aber hier benötige ich doch bestimmt was anderes.
+
+Java:In die Zwischenablage kopieren
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Uebung {
+    public static void main (String[] args) throws Exception {
+
+    String filename = "";
+   
+    filename = JOptionPane.showInputDialog("Geben Sie den Dateinamen ohne .txt ein:");
+    verarbeite(filename);
+
+
+
+
+    }
+   
+   
+   
+    //Ab hier drunter Methoden:
+    public static RUECKGABEWERT? verarbeite(final String filename) {
+        try {
+            FileReader fileR = new FileReader(filename+".txt");
+            BufferedReader bufR = new BufferedReader(fileR);
+            String zeile;
+            if(zeile.startsWith("DATA:") {
+                ...
+                ...
+                ...
+            }
+            while((zeile=bufR.readLine()) != null)
+            bufR.close();      
+        }
+        catch (IOException e){
+            System.out.println("Fehler in Dateibehandlung.");
+        }
+    }
+}
+
+Wenn die Zeile mit DATA: startet, dann kann ich meine weiteren Dinge erledigen.
+Und wenn nicht, dann brauche ich ja noch mein else{...}, was das Programm beendet.
+Kommt das else dann noch vor das while?
+
+
+
+
+Neumi5694 hat gesagt.:
+Es scheint mir, du würdest einen Anfängerkurs machen
+Dein Schein trügt dich nicht, dem ist auch noch so.😆
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+2. Sep 2022
+#9
+Die Methode verarbeitet die Daten ja nur und gibt nichts zurück. Daher wäre da dann void als Rückgabetyp anzugeben.
+Antwort
+Neumi5694
+Neumi5694
+Top Contributor
+2. Sep 2022
+#10
+maxmuster987 hat gesagt.:
+Wenn die Zeile mit DATA: startet, dann kann ich meine weiteren Dinge erledigen.
+Und wenn nicht, dann brauche ich ja noch mein else{...}, was das Programm beendet.
+Kommt das else dann noch vor das while?
+Nein, das while selbst prüft. Falls die Zeile nicht mit "DATA:" beginnt, soll das Auslesen ja laut deiner Beschreibung abgebrochen und das Programm beendet werden.
+Hier würde es sich anbieten, das WHILE vor die Schleife zu steleln, in nur dann betreten wird, falls Bedingung erfüllt ist. Innen musst du dann also nicht mehr prüfen.
+Java:In die Zwischenablage kopieren
+while (data != null && data.startsWith("DATA:") {
+//...
+}
+
+Und wirklich ... verwende die try with resource, wie von Kneitzel vorgeschlagen.
+
+
+ps: Ich glaube, du hast ein klein wenig missverstanden, wie das mit der "verarbeite" Methode gemeint war. Diese sollte auf jede Zeile der Datei angewendet werden, nicht auf den Dateinamen.
+Zu dem Zeitpunkt war allerdings noch nicht bekannt, dass du abhängig vom Zeileninhalt das Programm beenden willst.
+Antwort
+maxmuster987
+Aktives Mitglied
+2. Sep 2022
+#11
+Ich weiß nicht, ob ich heute einfach nur auf dem Schlauch stehe oder ob mir diese Aufgabe wirklich Kopfschmerzen bereitet, weil ich noch zu wenig Wissen habe, um die richtig zu bearbeiten.
+Ich weiß eure Ansätze sehr zu schätzen, aber ich verstehe momentan nur die Hälfte davon... 😕
+
+Ich fasse mal die Aufgabe zusammen, vielleicht kann man mir dann besser helfen, dass ich damit auch klar komme.
+
+1) Eingabe des Dateinamens
+2) Startet die Textdatei nicht mit DATA: , dann Programmabbruch mit Fehlermeldung
+3) Startet die Textdatei mit DATA:, dann die weiteren Zeilen in ein Array einlesen. Die Zahl hinter DATA: 10 gibt die Arraygröße wieder.
+4) Für die Ausgaben müssen Zeitstempel und Geschwindigkeit ermittelt werden in der Form: Zeit, Geschwindigkeit:
+10:00, 18.20
+12:00, 41.50
+13:00, 01.50
+...
+5) Ausgabe: Windenergie auf eine Nachkommastelle runden
+6) Bedingung: Wenn Geschwindigkeit v >= 40, dann pWind = 0 und Meldung " Wind zu stark "
+Wenn Geschwindigkeit v <= 2, dann pWind = 0 und Meldung "Wind zu schwach"
+
+Es sollen aber alle Zeilen ausgegeben werden, also nicht weil pWind plötzlich 0 ist, auf einmal abbrechen.
+Ich brauche also alle Werte ab der zweiten Zeile.
+
+Die Ausgabe sieht dann am Bildschirm so aus bspw.:
+
+10:00 vWind = 18.20 km/h pWind = 86.9kW
+12:00 vWind = 41.50 km/h pWind = 0kW Wind zu stark
+13:00 vWind = 01.50 km/h pWind = 0kW Wind zu schwach
+
+
+Java:In die Zwischenablage kopieren
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Uebung {
+    public static void main (String[] args) throws Exception {
+
+    String filename = "";
+    System.out.println("==============================");
+    System.out.println("=== Auswertung Windenergie ===");
+    System.out.println("==============================");
+  
+    filename = JOptionPane.showInputDialog("Geben Sie den Dateinamen ohne .txt ein:");
+    verarbeite(filename);
+
+    System.out.println(uhrzeit +"vWind = " +geschwindigkeit +" km/h\t pWind = "+windenergie(XXZeileXX) +" kW");
+  
+  
+    }
+  
+    /*
+    int limit = zeile.length;
+    data.substring(6,limit)
+    */
+  
+  
+    //Ab hier drunter Methoden:
+    public static void verarbeite(final String filename) {
+        while(zeile != null && zeile.startsWith("DATA:"){
+            try {
+                FileReader fileR = new FileReader(filename+".txt");
+                BufferedReader bufR = new BufferedReader(fileR);
+                String zeile;
+                if(zeile.startsWith("DATA:") {
+                ... 
+                ...
+                ...
+                }
+                while((zeile=bufR.readLine()) != null)
+                bufR.close();     
+            }
+            catch (IOException e){
+                System.out.println("Fehler in Dateibehandlung.");
+            }
+        }
+    }
+  
+    public static double windenergie(double v) {        // v soll aus der Text-Datei-Zeile ausgelesen werden ab Zeile 2, wenn Zeile 1 mit DATA: gestartet hat
+        final int r = 20;
+        final double rho = 1.2225;
+        double flaeche = Math.PI*r^2;
+      
+        if(v>2 || v<40) {
+            double pWind = (1/2.)*rho*flaeche*v^3;
+        }
+        else if (v>=40) {
+            double pWind = 0;
+            System.out.print("\tWind zu stark.");
+        }
+        else {
+            double pWind = 0;
+            System.out.print("\tWind zu schwach.");
+        }
+      
+    }
+}
+Zuletzt bearbeitet: 2. Sep 2022
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+2. Sep 2022
+#12
+Was mir gerade noch aufgefallen ist: Ein Punkt war evtl. noch etwas missverstanden:
+maxmuster987 hat gesagt.:
+Momentan bin ich bei Streams allgemein, also character-Streams und Filter-Streams (Puffer-Streams).
+Filter-Streams sind Datenpuffer, in denen Daten zur Verarbeitung zwischengelagert und verändert werden können. Darunter fallen BufferedReader oder BufferedWriter. Das habe ich momentan gelernt bzw. bin dran.
+Da evtl. nur noch der kleine Hinweis: Wenn hier im Zusammenhang mit dem Vorschlag von @Oneixee5 von Streams die Rede ist, dann sind damit nicht die diversen *stream Klassen aus java.io gemeint, die auf InputStream oder OutputStream basieren sondern die mit Java 8 eingeführte Stream-API, die dann auf das Package java.util.stream bzw. auf das Interface java.util.stream.BaseStream zurück geht und die einen funktionalen Ansatz bietet (Und wo dann auch Dinge wie Lambda Expressions und Methodenreferenzen mit ins Spiel kommen).
+
+Das solltest Du dann aber jetzt komplett ignorieren. Das kommt später - wenn nicht in deinem Kurs dann halt durch eigenes Erarbeiten nach dem Kurs. Das kannst Du Dir aber einfach einmal etwas merken für später.
+
+maxmuster987 hat gesagt.:
+Ich fasse mal die Aufgabe zusammen, vielleicht kann man mir dann besser helfen, dass ich damit auch klar komme.
+
+1) Eingabe des Dateinamens
+2) Startet die Textdatei nicht mit DATA: , dann Programmabbruch mit Fehlermeldung
+3) Startet die Textdatei mit DATA:, dann die weiteren Zeilen in ein Array einlesen. Die Zahl hinter DATA: 10 gibt die Arraygröße wieder.
+4) Für die Ausgaben müssen Zeitstempel und Geschwindigkeit ermittelt werden in der Form: Zeit, Geschwindigkeit:
+10:00, 18.20
+12:00, 41.50
+13:00, 01.50
+...
+5) Ausgabe: Windenergie auf eine Nachkommastelle runden
+6) Bedingung: Wenn Geschwindigkeit v >= 40, dann pWind = 0 und Meldung " Wind zu stark "
+Wenn Geschwindigkeit v <= 2, dann pWind = 0 und Meldung "Wind zu schwach"
+Zum Vergrößern anklicken....Da ist mein Tipp immer gleich: Bilde es so ab!
+Aus 1) wird dann String filename = eingabeDateiname();
+
+Bei 2 und 3 baust Du die Logik auch genau so auf. Um das bearbeiten zu können, musst Du die Datei Zeile für Zeile lesen. Das ist also der Rahmen drumherum: Du öffnest die Datei um da dann Zeilenweise lesen zu können.
+Bei 2) ist dann doch: Du liest eine Zeile und prüfst diese. Ist sie nicht wie gewünscht kommt die Fehlermeldung und der Abbruch
+Bei 3) ist dann die Schleife. Du hast eine Zahl oben eingelesen und da kannst Du das (oder die) Array(s) anlegen um diese dann in einer Schleife zu füllen.
+
+Also wäre für Dich wichtig, dass Du den Ablauf einmal in Worten genau aufschreibst: Was ist wann zu tun und zu machen? Dabei auch ruhig mit groben Anweisungen arbeiten. Die beschreibst Du dann separat halt auch noch (und das werden dann Methoden!)
+Antwort
+Jw456
+Top Contributor
+2. Sep 2022
+#13
+Erste Problem was gleich auffällt ist. Du willst in der While Anweisung deine Variable Zeile benutzen aber die wird erst später erstellt. In der While.
+Antwort
+Like Reactions:KonradN
+Jw456
+Top Contributor
+2. Sep 2022
+#14
+Zum verständnis du musst ja erstmal die Zeile aus dem Stream lesen.
+Bevor du etwas prüfen testen kannst.
+
+Das ist das was Konrad mit Grundüberlegung meint.
+Antwort
+Like Reactions:KonradN
+Neumi5694
+Neumi5694
+Top Contributor
+2. Sep 2022
+#15
+maxmuster987 hat gesagt.:
+1) Eingabe des Dateinamens
+2) Startet die Textdatei nicht mit DATA: , dann Programmabbruch mit Fehlermeldung
+3) Startet die Textdatei mit DATA:, dann die weiteren Zeilen in ein Array einlesen. Die Zahl hinter DATA: 10 gibt die Arraygröße wieder.
+4) Für die Ausgaben müssen Zeitstempel und Geschwindigkeit ermittelt werden in der Form: Zeit, Geschwindigkeit:
+}[/CODE]
+Na das klingt aber schon etwas anders und macht auch was Anderes als das, was du oben implemtiert hast.
+
+1) ignorier ich mal gekonnt, das passiert alles bevor du zur Datei kommst
+4) ebenfalls, Ausgaben kommen erst später
+2) 3) Die Auswertung der ersten Zeile ist also eine andere als die Auswertung der anderen Zeilen.
+
+Sprich: Dein Prozessor muss das unterscheiden können.
+Nur für die erste Zeile prüfst du auf "DATA:" und / oder Abbruch der Schleife.
+Alle folgenden Zeilen werden als Daten ausgewertet.
+Java:In die Zwischenablage kopieren
+line = ...;
+  //ansonsten geht eh nichts
+ boolean isValidDataFile = line != null && line.startwith("DATA:");
+if (isValidDataFile) {
+    do {
+        line = ...;
+        ausgewerteteDaten.add(auswergung(line));
+    } while line != null;
+} else {
+  //..irgendwas ausgeben vielleicht?
+}
+Antwort
+maxmuster987
+Aktives Mitglied
+3. Sep 2022
+#16
+Ich hab ja oft gesagt bekommen, ich soll das Programm in viele kleine Methoden aufteilen.
+Dann habe ich mir sowas in die Richtung nun überlegt.
+
+Die Eingabe in einer Methode, wie oben gesagt.
+
+Danach, will ich die Prüfung in einer Methode machen, die mir den Wahrheitswert zurückgibt?
+
+Jetzt habe ich ein true oder false erhalten.
+
+Mit diesem Warheitswert gehe ich dann in eine if-Anweisung, falls true, dann sollen die Daten ausgelesen werden in einer Methode.
+
+Ich habe allerdings noch Probleme mit dem Daten einlesen ab Zeile 2.
+Ich weiß ehrlich gesagt noch nicht, wie ich das anstellen soll. Der nachfolgende Code ist mit Sicherheits nur Murcks, aber damit ihr meinen groben Weg nachvollziehen könnt, was ich eigentlich machen möchte, um zur Lösung zu kommen.
+Die Variable zeile1, zeile und zeilenAnzahl habe ich auch noch nicht näher definiert, da habe ich auch noch meine Probleme.
+
+
+Java:In die Zwischenablage kopieren
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Uebung {
+    public static void main (String[] args) throws Exception {
+
+        System.out.println("==============================");
+        System.out.println("=== Auswertung Windenergie ===");
+        System.out.println("==============================");
+       
+        String filename = eingabeDateiname();
+        boolean pruefung = dateiPruefung(filename);
+       
+        if(pruefung == true){
+            datenAuslesen(filename);
+        }
+        else{
+            System.out.println("Datei startet nicht mit DATA: -> Programmabbruch.");
+            System.exit(0);
+        }
+       
+        for(int i=0; i<zeilenAnzahl-1; i++){
+            System.out.println(uhrzeitenFeld[i] +" vWind = " +geschwindigkeitsFeld[i] +" km/h\t pWind = " +pWind +" kW ");
+        }
+    }
+   
+   
+    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    Ab hier drunter Methoden:
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+   
+    //Eingabe des Dateinamens
+    public static String eingabeDateiname(){
+        String eingabe = JOptionPane.showInputDialog("Geben Sie den Dateinamen ohne .txt ein:");
+        return eingabe;
+    }
+   
+    //Pruefen, ob die Datei mit DATA: startet -> Wahrheitswert zurueckgeben
+    public static boolean dateiPruefung(String filename){
+        try {
+            FileReader fileR = new FileReader(filename+".txt");
+            BufferedReader bufR = new BufferedReader(fileR);
+            String zeile;      
+            boolean wahrheitswertVonZeile1 = zeile.startsWith("DATA:");
+            return wahrheitswertVonZeile1;
+        }
+    }
+   
+    //Datei ab Zeile 2 auslesen, falls dateiPruefung true zurueckgibt  
+    public static String datenAuslesen(String filename){
+        int limit = zeile1.length;
+        int arraygroesse = Integer.parseInt(zeile1.substring(6,limit));                  
+        double uhrzeitenFeld [] = new double [arraygroesse];
+        double geschwindigkeitsFeld [] = new double [arraygroesse];
+       
+        try {
+        ...
+        ...
+        ...
+        }
+    }
+   
+   
+
+   
+   
+   
+/*
+
+   
+   
+    //Berechnung der Windenergie
+    public static double windenergie(double v) {        // v soll aus der Text-Datei-Zeile ausgelesen werden
+        final int r = 20;
+        final double rho = 1.2225;
+        double flaeche = Math.PI*r^2;
+       
+        if(v>2 && v<40) {
+            double pWind = (1/2.)*rho*flaeche*v^3;
+        }
+        else if (v>=40) {
+            double pWind = 0;
+            System.out.print("\tWind zu stark.");
+        }
+        else {
+            double pWind = 0;
+            System.out.print("\tWind zu schwach.");
+        }
+       
+    }
+    */
+   
+}
+Antwort
+Jw456
+Top Contributor
+3. Sep 2022
+#17
+Tipp wie wir schon sagten musst du erst mal was aus den BufferReader lesen.
+
+Lesen tut man mit read. Ich sehe kein read von bufR
+
+In deinem Fall wird readline wohl sinnvoller sein.
+
+BufferedReader (Java Platform SE 8 )
+Zuletzt bearbeitet: 3. Sep 2022
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#18
+Ich habe mich bisschen weiter probiert und try with resource bisschen näher angeschaut.
+Ich habe die Methode dateiPruefung jetzt angepasst in folgender Form:
+
+Java:In die Zwischenablage kopieren
+public static boolean dateiPruefung(String filename){
+    boolean wahrheitswertVonZeile1;
+
+    try(FileReader fileR = new FileReader(filename+".txt");
+        BufferedReader bufR = new BufferedReader(fileR)) {
+
+        String zeile;  
+        zeile = bufR.readLine();
+        wahrheitswertVonZeile1 = zeile.startsWith("DATA:");
+    }
+    catch(NullPointerException e) {
+    }
+    return wahrheitswertVonZeile1;
+}
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#19
+Soweit sollte die Methode jetzt das machen was sie aussagt.
+
+Aber jetzt du willst nun in der zweiten Methode deine gelesen daten weiter verarbeiten.
+Entweder müsste deine erste die daten zurückschicken nicht nur ein boolean.
+Oder deine Variable Zeile idz ist nucht nicht lokal.
+Sondern eine Instanzvariable.
+
+Was ist da "zeile1" wo kommt die her.
+
+Arbeitest du nicht mit einer IDE die dir das gleich sagt.
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#20
+Mal eine Frage zum Aufbau deiner Datei.
+
+Am Anfang ist DATA: was kommt jetzt gleich die Daten ohne einen Zeilenumbruch oder mit?
+
+Bedenke das ReadLine bei einem Aufruf den Stream immer nur bis zum Zeilenumbruch liest und als String zurück gibt.
+Wenn die Datei etwa so ausschaut wirst du mit deinem Konzept nicht weit kommen.
+
+Java:In die Zwischenablage kopieren
+DATA:(Zeilenumbruch)
+10:00, 18.20(Zeilenumbruch)
+12:00, 41.50(Zeilenumbruch)
+13:00, 01.50(Zeilenumbruch)
+
+Da wird es besser sein die Daten in einer Schleife in eine Liste oder Array zu lesen und dann weiter zu verarbeiten. Selbst wenn du deine Stringvariable „zeile“ als Instanzvariable (global) machst. Wird sie nach dem ersten lesen nur das „DATA:“ als Inhalt haben, und keine Daten.
+
+Edit:
+In deinen ersten Post #1 Zeile 15-16 war das lesen ja schon vorhanden.
+Java:In die Zwischenablage kopieren
+            while((strng=obj.readLine()) != null)
+                System.out.println(strng);
+
+Nur muss in der Schleife schon etwas mehr passieren als nur eine Ausgabe.
+
+Erst mal am besten immer Klammern benutzen. Hier könntest du es in eine Liste oder Array speichern. Die dann entweder zurückgeben oder die Liste /Array als Instanzvariable erstellen.
+Um es weiter zu verarbeiten.
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#21
+maxmuster987 hat gesagt.:
+Da drunter stehen dann Zeilen in Form von:
+DATA: 10
+19:00, 12.23
+20:20, 10.00
+Was bedeutet die "10" ?
+Zehn folgende Zeilen ?
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#22
+Jw456 hat gesagt.:
+Was bedeutet die "10" ?
+Zehn folgende Zeilen ?
+Jawohl, das bedeutet das.
+Im Beispiel:
+DATA: 3
+10:00, 20.50
+11:00, 30.00
+13:45, 41.50
+
+
+
+Ich hatte mich gestern Nacht auch noch um das Daten auslesen ab Zeile 2 "gekümmert" bzw. versucht.
+Ich weiß, dass das noch nicht korrekt ist, weil ich jetzt doppelt auslese.
+Das erste try soll mir die erste Zeile auswerten, denn ich brauche ja den Zahlenwert hinter dem Data. Dieser Wert ist ja x beliebig, deswegen die Variable "zeile1Laenge", damit ich weiß, bis wohin ausgelesen werden soll im substring.
+Der Startwert ist ja 6, weil DATA: insgesamt 6 Zeichen hat mit Leerzeichen.
+
+Und das zweite try soll alle Daten ab Zeile 2 in ein Array speichern.
+Aber so wie ich das gemacht habe (so vermute ich mal), wird beim zweiten Array ebenfalls die erste Zeile nochmal ausgelesen. Das heißt, ich muss irgendwie beide trys zusammenpacken, oder?
+
+Java:In die Zwischenablage kopieren
+public static String datenAuslesen(String filename){
+ 
+    int zeile1Laenge = 0, arraygroesse = 0, zahlenwertHinterData = 0;
+ 
+    try(FileReader fileR = new FileReader(filename+".txt");
+        BufferedReader bufR = new BufferedReader(fileR)) {
+     
+        String zeile1;
+        zeile1 = bufR.readLine();
+        zeile1Laenge = zeile1.length;
+        zahlenwertHinterData = zeile1.substring(6, zeile1Laenge+1);
+        arraygroesse = Integer.parseInt(zahlenwertHinterData);
+     
+    }
+    catch(NullPointerException e){
+    }
+ 
+    double uhrzeitenFeld [] = new double [arraygroesse];
+    double geschwindigkeitsFeld [] = new double [arraygroesse];
+ 
+    try(FileReader fileR = new FileReader(filename+".txt");
+        BufferedReader bufR = new BufferedReader(fileR)) {
+
+        for(int i=0; i<arraygroesse; i++) {
+            String zeile;
+            zeile = bufR.read(line);
+            uhrzeitenFeld[i] = zeile.substring(0,5);
+            geschwindigkeitsFeld[i] = zeile.substring(7,12);
+        }
+        while((zeile = bufR.readLine()) != null)
+    }
+    catch(NullPointerException e) {
+    }
+}
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#23
+Beachte da du einen neuen File / BufferReader benutzt du auch die Datei wider von Anfang an liest. Also nach den ersten Durchgang der for ist das „DATA“ wider in der String Variablen.
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#24
+Zweitens deine Beiden Arrays sind wieder nur lokal wie willst du später darauf zugreifen.
+
+Ich denke du wiederholst nochmal Grundlagen Java Sichtbarkeit und Gültigkeit von Variablen.
+Unterschied Lokale Variablen, Instanzvariablen, und Klassenvariablen.
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#25
+Drittens die Methode wird auch nicht Kompilieren da sie keine Rückgabe macht return.
+
+Welche IDE benutzt du?
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#26
+Java:In die Zwischenablage kopieren
+  static String[] uhrzeitenFeld;
+    static double[] geschwindigkeitsFeld;
+
+    public static boolean datenAuslesen(String filename) {
+
+        int zeile1Laenge = 0, arraygroesse = 0 ;
+
+        try (FileReader fileR = new FileReader(filename + ".txt");
+             BufferedReader bufR = new BufferedReader(fileR)) {
+
+            String zeile;
+            while ((zeile = bufR.readLine()) != null) { // so nicht notwendig
+
+                zeile1Laenge = zeile.length();
+                arraygroesse = Integer.parseInt(zeile.substring(6, zeile1Laenge + 1));
+
+                uhrzeitenFeld = new String[arraygroesse];
+                geschwindigkeitsFeld = new double[arraygroesse];
+
+                for (int i = 0; i < arraygroesse; i++) {
+                    String zeileDaten;
+                    zeileDaten = bufR.readLine();
+                    uhrzeitenFeld[i] = zeileDaten.substring(0, 5);
+                    geschwindigkeitsFeld[i] = Double.parseDouble(zeileDaten.substring(7, 12));
+                }
+
+            }
+        } catch (FileNotFoundException e) {
+            return false;
+     
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+so in etwa könnte es gehen.
+
+Welche IDE benutzt du?
+
+"10:00" ist kein Double, sondern ein String Parsen nach double wird immer Fehler geben.
+
+Edit :
+sorry das while brauchst du so eigentlich nicht. versuche selber warum.
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#27
+Jw456 hat gesagt.:
+Zweitens deine Beiden Arrays sind wieder nur lokal wie willst du später darauf zugreifen.
+Was ist, wenn ich die "einfach" direkt unterhalb der Klasse class definiere?
+Ist sie dann nicht überall aufgreifbar?
+
+Jw456 hat gesagt.:
+Welche IDE benutzt du?
+Notepad++
+
+Jw456 hat gesagt.:
+"10:00" ist kein Double, sondern ein String Parsen nach double wird immer Fehler geben.
+Aber 10:00 will ich doch auch gar nicht nach double parsen? Das double parsen gilt nur für die Geschwindigkeit. Die Uhrzeit benötige ich nur als String.
+Anhänge
+Java.png
+Java.png
+7 KB · Aufrufe: 1
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#28
+maxmuster987 hat gesagt.:
+Aber 10:00 will ich doch auch gar nicht nach double parsen? Das double parsen gilt nur für die Geschwindigkeit. Die Uhrzeit benötige ich nur als String.
+ja tust du auch nicht.
+Aber der Code wird nicht Kompiliren.
+Du bekommst mit readLine immer einen String zurück den kannst du nicht einem duoble zuweisen. Compiler Fehler
+Deine Arrays sind beide vom Datentyp double.
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#29
+maxmuster987 hat gesagt.:
+Notepad++
+Wieso das?
+Das ist keine IDE. Nur ein einfacher Editor. Kein Wunder das du so grundlegende Fehler machst.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#30
+Jw456 hat gesagt.:
+Du bekommst mit readLine immer einen String zurück den kannst du nicht einem duoble zuweisen. Compiler Fehl
+Deine Arrays sind beide vom Datentyp double.
+Ah okay, das meinst du, dann habe ichs falsch aufgenommen.
+
+Jw456 hat gesagt.:
+Wieso das?
+Weil das nur auf den Arbeitsrechnern zur Verfügung steht, ich hab da kein IntelliJ oder andere Programme, die dafür geeignet wären.
+Das Einzige, was möglich wäre. Wenn ich mir IntelliJ zuhause auf einen Stick runterlade und ich das Programm immer über den Stick öffnen könnte. Aber ich weiß nicht, ob das funktioniert, weil auf den Rechnern selbst kann ich das nicht installieren aus Firmenensicherheitsgründen frag den Geier...
+
+Welche Umgebung würdest du denn empfehlen?
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#31
+Ich nutze IntelliJ.
+
+Glaube Eclipse ist oder gibt es auch als Portabel Version. Was somit auf einen Firmen Rechner laufen könnte.
+Zuletzt bearbeitet: 4. Sep 2022
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#32
+Habe mich jetzt über eine Stunde mit der Installation von Eclipse auf einen Stick auseinandergesetzt und bin anscheinend zu dumm, um das da drauf zu bekommen auch nach sämtlichen Videotutorials und sonstigem.
+Daher bleibe ich dann wohl doch Notepad++ treu und arbeite dort weiter, auch wenn's fehleranfälliger ist.
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#33
+Die Fehler machst ja du, und du sollst lernnen das auch zu erkennen.
+Der Compiler gibt dir ja auch entsprechende Fehler Meldungen.
+
+Du musst es halt öfters versuchen zu compilieren um die Fehler zu sehen.
+
+In einer IDE siehst du es halt einfacher.
+Antwort
+Like Reactions:Oneixee5
+Oneixee5
+Oneixee5
+Top Contributor
+4. Sep 2022
+#34
+Eclipse muss man nicht über den Installer installieren. Einfach eins der Pakete als zip runterladen, entpacken und fertig. Du benötigst natürlich ein Java. Ich empfehle OpenJDK 17 aber ein JRE tut es auch.
+Eine weitere Alternative wäre Visual Studio Code, der Installer entpackt einfach nur und das funktioniert auch auf abgesicherten Firmen PC. Visual Studio Code muss man sich aber selbst aufrüsten, um damit Java zu programmieren. Auch hier ist ein JDK notwendig.
+Eine IDE auf einem USB-Stick wird bestimmt viel zu langsam.
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#35
+Oneixee5 hat gesagt.:
+Eclipse muss man nicht über den Installer installieren. Einfach eins der Pakete als zip runterladen, entpacken und fertig. Du benötigst natürlich ein Java. Ich empfehle OpenJDK 17 aber ein JRE tut es auch.
+Eine weitere Alternative wäre Visual Studio Code, der Installer entpackt einfach nur und das funktioniert auch auf abgesicherten Firmen PC. Visual Studio Code muss man sich aber selbst aufrüsten, um damit Java zu programmieren. Auch hier ist ein JDK notwendig.
+Eine IDE auf einem USB-Stick wird bestimmt viel zu langsam.
+Auf dem Stick ja. Aber er könnte es auf dem Firmen Rechner in seinem Home Verzeichnis laufen lassen. Ohne Admin Rechte und Einträge in die Windows-Registrierungsdatenbank.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#36
+Jw456 hat gesagt.:
+Die Fehler machst ja du, und du sollst lernnen das auch zu erkennen.
+Der Compiler gibt dir ja auch entsprechende Fehler Meldungen.
+Ja, dem bin ich mir bewusst. Ich meine nur damit, dass ich dann die Fehler nicht so schnell sehen kann. :-D
+
+Oneixee5 hat gesagt.:
+Einfach eins der Pakete als zip runterladen, entpacken und fertig. Du benötigst natürlich ein Java. Ich empfehle OpenJDK 17 aber ein JRE tut es auch.
+Hehehe, das hat mir geholfen. Jetzt habe ich es hinbekommen! Danke.
+
+
+
+
+Java:In die Zwischenablage kopieren
+import java.io.*;
+import javax.swing.*;
+import java.util.*;
+
+public class Uebung {
+
+    public static void main(String[] args) {
+        System.out.println("==============================");
+        System.out.println("=== Auswertung Windenergie ===");
+        System.out.println("==============================");
+        
+        String filename = eingabeDateiname();
+        boolean pruefung = dateiPruefung(filename);
+        
+        if(pruefung == true){
+            datenAuslesen(filename);
+        }
+        else{
+            System.out.println("Datei startet nicht mit DATA: -> Programmabbruch.");
+            System.exit(0);
+        }
+        
+        for(int i=0; i<zeilenAnzahl-1; i++){
+            System.out.println(uhrzeitenFeld[i] +" vWind = " +geschwindigkeitsFeld[i] +" km/h\t pWind = " +pWind[i] +" kW ");
+        }
+    }
+    
+    //Ab hier drunter Methoden:
+    //Eingabe des Dateinamens
+    public static String eingabeDateiname(){
+        String eingabe = JOptionPane.showInputDialog("Geben Sie den Dateinamen ohne .txt ein:");
+        return eingabe;
+    }
+    
+    //Pruefen, ob die Datei mit DATA: startet -> Wahrheitswert zurueckgeben
+    public static boolean dateiPruefung(String filename){
+        boolean wahrheitswertVonZeile1;
+        
+        try(FileReader fileR = new FileReader(filename+".txt");
+            BufferedReader bufR = new BufferedReader(fileR)) {
+                
+            String zeile;   
+            zeile = bufR.readLine();
+            wahrheitswertVonZeile1 = zeile.startsWith("DATA:");
+        }
+        catch(NullPointerException e) {
+        }
+        return wahrheitswertVonZeile1;
+    }
+    
+    //Datei ab Zeile 2 auslesen, falls dateiPruefung true zurueckgibt   
+public static String datenAuslesen(String filename){
+    
+    int zeile1Laenge = 0, arraygroesse = 0, zahlenwertHinterData = 0;
+    
+    try(FileReader fileR = new FileReader(filename+".txt");
+        BufferedReader bufR = new BufferedReader(fileR)) {   
+        
+        String zeile1;
+        zeile1 = bufR.readLine();
+        zeile1Laenge = zeile1.length;
+        zahlenwertHinterData = zeile1.substring(6, zeile1Laenge+1);
+        arraygroesse = Integer.parseInt(zahlenwertHinterData);
+        
+        double uhrzeitenFeld [] = new double [arraygroesse];
+        double geschwindigkeitsFeld [] = new double [arraygroesse];
+    
+
+
+        for(int i=0; i<arraygroesse; i++) {
+            String zeile;
+            zeile = bufR.read(line);
+            uhrzeitenFeld[i] = zeile.substring(0,5);
+            geschwindigkeitsFeld[i] = zeile.substring(7,12);
+        }
+        while((zeile = bufR.readLine()) != null)   
+    }
+    catch(NullPointerException e) {
+    }
+}   
+    
+
+}
+
+
+Wenn ich das jetzt in Eclipse ausführen lasse, dann bekomme ich folgende Fehler:
+
+Code:In die Zwischenablage kopieren
+Exception in thread "main" java.lang.Error: Unresolved compilation problems:
+    zeilenAnzahl cannot be resolved to a variable
+    uhrzeitenFeld cannot be resolved to a variable
+    geschwindigkeitsFeld cannot be resolved to a variable
+    pWind cannot be resolved to a variable
+
+    at Uebung.main(Uebung.java:23)
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#37
+Genau das was ich dir schon gesagt habe. Du kannst einem double keinen String zuweisen.
+
+zeilenAnzahl benutzt du ohne es erstellt zu haben.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#38
+Jw456 hat gesagt.:
+zeilenAnzahl benutzt du ohne es erstellt zu haben.
+Das ist nur ein Lückenfüller gewesen, damit ich weiß, welchen Wert ich da benötige. Das wird geändert zu arraygroesse.
+Jw456 hat gesagt.:
+Genau das was ich dir schon gesagt habe. Du kannst einem double keinen String zuweisen.
+Java:In die Zwischenablage kopieren
+        String uhrzeitenFeld [] = new String [arraygroesse];
+
+Und wenn ich es dann so mache?
+Antwort
+Jw456
+Top Contributor
+4. Sep 2022
+#39
+Hast du dir mal mein Beispiel angesehen. Ich glaube nein.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#40
+Das Beispiel ist anscheinend untergegangen und habe ich nicht wahrgenommen.
+
+Ich hab mir das jetzt angeschaut und hab mir die Frage gestellt, warum gebe ich hier ebenfalls einen Wahrheitswert zurück?
+Welchen Nutzen bringt mir jetzt ein true oder false?
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+4. Sep 2022
+#41
+Zum Thema Entwicklungsumgebung evtl. noch der Hinweis von mir:
+IntelliJ ist auch als ZIP ladbar. Gerade für Anfänger hat Intellij deutlich mehr Hilfen als Eclipse. Daher wäre das meine Empfehlung. Und das kannst Du damit auch von einem USB Stick laufen lassen. Das dürfte aber deutlich zu langsam sein, zumindest die meisten USB Sticks, die ich so kenne, sind da sehr schlecht. Aber eine einfache kleine SSD mit USB 3 wäre hier garantiert eine super Lösung - so Du die Software nicht einfach auf dem Rechner irgendwo liegen haben kannst (z.B. dein User Verzeichnis).
+
+Was Deinen Code angeht, so sieht der doch schon sehr gut aus. Bei lokalen Variablen ist es aber immer gut, Deklaration und Zuweisung auch zusammen zu fassen. Aus
+Java:In die Zwischenablage kopieren
+        String zeile1;
+        zeile1 = bufR.readLine();
+wird dann einfach
+Java:In die Zwischenablage kopieren
+        String zeile1 = bufR.readLine();
+
+Und dann musst Du bei neuen lokalen Variablen nur überlegen: Was für ein Datentyp wird denn hier benötigt?
+
+Also z.B. bei `zeile1Laenge = zeile1.length;`ist die Frage immer:
+Was für ein Typ wird hier gebraucht? Dazu schaust Du Dir dann an, was denn length ist - length ist eine Methode von String, die ein int zurück gibt.
+Also kommt da einfach ein int davor und schon wird die Variable auch deklariert. Und da length eine Methode ist kommen da natürlich auch () drumherum.: int zeile1Laenge = zeile1.length();
+
+Tipp: Eine Entwicklungsumgebung unterstützt Dich direkt beim tippen! Wenn Du also zeile1.len getippt hast, dann sollte dir die Methode length schon angeboten werden. Mit der Tab Taste würde Dir IntelliJ direkt alles ergänzen so dass da dann zeile1.length(); stehen dürfte. Und wenn Du da so einen Fehler hast mit Variable nicht deklariert, dann bietet IntelliJ da auch einiges an Hilfe an! (Andere IDEs haben das auch, aber Anfängerfreundlich ist zumindest bei Eclipse nichts!)
+
+So kannst Du den ganzen Code relativ schnell und gut überarbeiten.
+
+Das nächste Problem kommt aber dann bei:
+Java:In die Zwischenablage kopieren
+        double uhrzeitenFeld [] = new double [arraygroesse];
+        double geschwindigkeitsFeld [] = new double [arraygroesse];
+Das sind wieder lokale Variablen - aber Du willst diese Werte ja auch außerhalb des aktuellen Blocks noch haben. Hier solltest Du Dir einmal anschauen, was Instanz- oder Klassenvariablen sind.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#42
+KonradN hat gesagt.:
+Anfängerfreundlich ist zumindest bei Eclipse nichts!
+Ich dachte schon, dass es mir nur so vorkommt, weil ich noch nicht viel Erfahrung habe. Aber wenn du das sogar bestätigst, dann hat mich mein Anschein wohl doch nicht getrügt.
+KonradN hat gesagt.:
+Das dürfte aber deutlich zu langsam sein, zumindest die meisten USB Sticks, die ich so kenne, sind da sehr schlecht. Aber eine einfache kleine SSD mit USB 3 wäre hier garantiert eine super Lösung - so Du die Software nicht einfach auf dem Rechner irgendwo liegen haben kannst (z.B. dein User Verzeichnis).
+Den Hinweis nehme ich mir mal zu Herzen, dann werde ich schauen, dass ich intelliJ irgendwie da drauf bekomme.
+
+
+KonradN hat gesagt.:
+Was Deinen Code angeht, so sieht der doch schon sehr gut aus.
+Echt jetzt? Bei den vorherigen Kommentaren war ich schon am verzweifeln, dass ich komplett auf dem falschen Weg bin und habe mir neue, anderweitige Lösungsmöglichkeiten gesucht mit Hilfe von Videotutorials und Java Skripten.
+
+KonradN hat gesagt.:
+length eine Methode ist kommen da natürlich auch ()
+Das ist auch gut zu wissen.
+
+KonradN hat gesagt.:
+Das sind wieder lokale Variablen - aber Du willst diese Werte ja auch außerhalb des aktuellen Blocks noch haben. Hier solltest Du Dir einmal anschauen, was Instanz- oder Klassenvariablen sind.
+Das hatte ich auch mal am Anfang gelernt.
+Instanzvariablen stehen einem Objekt zur Verfügung, während Klassenvariablen allen Objekten zur Verfügung stehen, d.h. sie sind globale Variablen.
+Antwort
+maxmuster987
+Aktives Mitglied
+4. Sep 2022
+#43
+Eine Frage nebenbei zu intelliJ. Ich hab mir jetzt eine SSD bestellt, die sollte morgen da sein, solange kann ich von meinem Heim-PC intelliJ nutzen und das Ganze abarbeiten.
+
+Ich habe ja jetzt meine Programme alle in notepad++ geschrieben und dementsprechend auch die Java Datei.
+Wie öffne ich diese Java Datei in intelliJ und lasse "RUN" ausführen?
+Irgendwie muss ich immer vorher ein Projekt neu öffnen und speichern. Funktioniert das nicht einfach so, dass die Java Datei eingelesen wird und der automatisch das Projekt erstellt anhand des Java-Datei-Namens?
+Antwort
+KonradN
+KonradN
+Super-Moderator
+Mitarbeiter
+5. Sep 2022
+#44
+Generell empfehle ich, wirklich erst ein Projekt anzulegen um da dann die Dateien hinein zu kopieren. Wenn Du ein Java File direkt öffnest, dann kannst Du es nicht ausführen und viele Dinge stehen nicht zur Verfügung.
+
+Bei den Projekten wäre auch meine Empfehlung, ruhig frühzeitig auf Maven zu setzen. Hier ist aber wichtig: Es wird ein Zugriff auf das Internet benötigt. Falls Du auf dem Rechner kein Internet Zugang haben solltest, so ist es vermutlich keine Idee, auf Maven zu setzen. Und wenn Dein Home Verzeichnis komplett frei bleiben soll, müsstest Du da in IntelliJ noch ein paar Konfigurationen vornehmen:
+In den IntelliJ Einstellungen unter Build, Execution, Deployment > Build Tools > Maven kannst Du das user settings file und Local Repository an eine andere Stelle (Seine SSD) verschieben, damit nicht alles in deinem Home Verzeichnis unter .m2 landet. (Aber evtl. ist das ja noch in Ordnung. Zumindest das .m2/settings.xml File sollte ok sein, damit Du Maven auch auf der Kommandozeile nutzen kannst.
+Antwort
+Jw456
+Top Contributor
+5. Sep 2022
+#45
+maxmuster987 hat gesagt.:
+Das Beispiel ist anscheinend untergegangen und habe ich nicht wahrgenommen.
+
+Ich hab mir das jetzt angeschaut und hab mir die Frage gestellt, warum gebe ich hier ebenfalls einen Wahrheitswert zurück?
+Welchen Nutzen bringt mir jetzt ein true oder false?
+Du könntest zum Beispiel in der Aufruf Methode (main) prüfen ob beim lesen ein Fehler aufgtreten ist..
+Brauchst dann zb deine Ausgabe nicht mehr nachen.
+Es war doch glaube auch gefordert zu prüfen ob das lesen ok war.
+Antwort
+maxmuster987
+Aktives Mitglied
+5. Sep 2022
+#46
+KonradN hat gesagt.:
+Es wird ein Zugriff auf das Internet benötigt.
+Das ist leider nicht immer gegeben, deswegen würde ich darauf fürs Erste einmal verzichten.
+Sobald die SSD angekommen ist im Laufe des Tages, dann werde ich es darauf einmal entpacken und paar nötige Einstellungen vornehmen.
+
+Jw456 hat gesagt.:
+Du könntest zum Beispiel in der Aufruf Methode (main) prüfen ob beim lesen ein Fehler aufgtreten ist..
+Brauchst dann zb deine Ausgabe nicht mehr nachen.
+Es war doch glaube auch gefordert zu prüfen ob das lesen ok war.
+Ja genau, das war es. Aber ich dachte, das habe ich schon mit der Methode dateiPruefung abgearbeitet. Und die Methode datenAuslesen soll mir jetzt die Zeilen auslesen, wenn dateiPruefung ein true zurückgegeben hat.
+
+Java:In die Zwischenablage kopieren
+public static boolean dateiPruefung(String filename){
+    boolean wahrheitswertVonZeile1;
+
+    try(FileReader fileR = new FileReader(filename+".txt");
+        BufferedReader bufR = new BufferedReader(fileR)) {
+
+        String zeile;   
+        zeile = bufR.readLine();
+        wahrheitswertVonZeile1 = zeile.startsWith("DATA:");
+    }
+    catch(NullPointerException e) {
+    }
+    return wahrheitswertVonZeile1;
+}
+Antwort
+Jw456
+Top Contributor
+5. Sep 2022
+#47
+Musst du ja nicht benutzen. Dann halt einfach nur void.
+Antwort
+Jw456
+Top Contributor
+5. Sep 2022
+#48
+Bei der Methode dateiPruefung() würde ich auch in dem catch Zweig ein false zurückgeben. Also wenn zb beim öffnen lesen der Datei ein Fehler passiert. Sollte auch false zurück geben werden.
+
+Ja deine Variable sollte default auf false sein ich würde es ihr aber doch am anfang zuweisen.
+Zuletzt bearbeitet: 5. Sep 2022
+Antwort
+Jw456
+Top Contributor
+5. Sep 2022
+#49
+maxmuster987 hat gesagt.:
+Und die Methode datenAuslesen soll mir jetzt die Zeilen auslesen, wenn dateiPruefung ein true zurückgegeben hat.
+Ja aber es könnte ja noch ein Fehler beim lesen und schrieben in den Arrays auftreten.
+Die IDE fordert ja auch ein tray catch.
+Lesen, Parsen...
+Antwort
+maxmuster987
+Aktives Mitglied
+5. Sep 2022
+#50
+Ich komme einfach nicht weiter, ich verstehe es einfach nicht... Ich habe das jetzt auch in intelliJ drin und bekomme insgesamt 14 Fehlermeldungen...
+
+Ich will es jetzt so machen, dass mein main relativ kompakt bleibt.
+
+Dateneingabe über Methode.
+Rückgabe boolean true/false.
+Bei false wird in der main das Programm bereits beendet.
+Bei true, dann werden Daten in der Methode datenAuslesen ausgelesen und anschließend berechnet + ausgegeben.
+Ist das legitim, das so zu handhaben?
+
+
+Java:In die Zwischenablage kopieren
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class TextDateienEinlesenVerarbeiten {
+    public static void main (String[] args) throws Exception {
+
+        System.out.println("==============================");
+        System.out.println("=== Auswertung Windenergie ===");
+        System.out.println("==============================");
+
+        String filename = eingabeDateiname();
+        boolean pruefung = dateiPruefung(filename);
+
+        if(pruefung == true){
+            datenAuslesen(filename);
+        }
+        else{
+            System.out.println("Datei startet nicht mit DATA: -> Programmabbruch.");
+            System.exit(0);
+        }
+
+    }
+
+
+
+    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    Ab hier drunter Methoden:
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+    //Eingabe des Dateinamens
+    public static String eingabeDateiname(){
+        String eingabe = JOptionPane.showInputDialog("Geben Sie den Dateinamen ohne .txt ein:");
+        return eingabe;
+    }
+
+    //Pruefen, ob die Datei mit DATA: startet -> Wahrheitswert zurueckgeben
+    public static boolean dateiPruefung(String filename){
+        boolean wahrheitswertVonZeile1 = false;
+
+        try(FileReader fileR = new FileReader(filename+".txt");
+            BufferedReader bufR = new BufferedReader(fileR)) {
+
+            String zeile;
+            zeile = bufR.readLine();
+            wahrheitswertVonZeile1 = zeile.startsWith("DATA:");
+        }
+        catch(NullPointerException e) {
+            return false;
+        }
+        return wahrheitswertVonZeile1;
+    }
+
+    //Datei ab Zeile 2 auslesen, falls dateiPruefung true zurueckgibt
+    static String[] uhrzeitenFeld;
+    static double[] geschwindigkeitsFeld;
+
+    public static boolean datenAuslesen(String filename){
+
+        int zeile1Laenge = 0, arraygroesse = 0 ;
+
+        try (FileReader fileR = new FileReader(filename + ".txt");
+             BufferedReader bufR = new BufferedReader(fileR)) {
+
+            String zeile;
+            while ((zeile = bufR.readLine()) != null) { // so nicht notwendig
+
+                zeile1Laenge = zeile.length();
+                arraygroesse = Integer.parseInt(zeile.substring(6, zeile1Laenge + 1));
+
+                uhrzeitenFeld = new String[arraygroesse];
+                geschwindigkeitsFeld = new double[arraygroesse];
+
+                for (int i = 0; i < arraygroesse; i++) {
+                    String zeileDaten;
+                    zeileDaten = bufR.readLine();
+                    uhrzeitenFeld[i] = zeileDaten.substring(0, 5);
+                    geschwindigkeitsFeld[i] = Double.parseDouble(zeileDaten.substring(7, 12));
+                }
+
+            }
+        } catch (FileNotFoundException e) {
+            return false;
+
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+
+
+    //Berechnung der Windenergie
+    public static double windenergie(double v) {        // v soll aus der Text-Datei-Zeile ausgelesen werden
+        final int r = 20;
+        final double rho = 1.2225;
+        double flaeche = Math.PI*r^2;
+        static double windenergieFeld[] = new double [arraygroesse];
+        windenergieFeld[i] = (1/2.)*rho*flaeche*Math.pow(geschwindigkeitsFeld[i]/3.6.,3);
+
+        if(v<=2 ) {
+            System.out.println(uhrzeitenFeld[i]+ "vWind = "+geschwindigkeitsFeld[i] +" km/h \t pWind = 0kW \t Wind zu schwach ");
+        }
+        else if (v>=40) {
+            System.out.println(uhrzeitenFeld[i]+ "vWind = "+geschwindigkeitsFeld[i] +" km/h \t pWind = 0kW \t Wind zu stark ");
+        }
+        else {
+            System.out.println(uhrzeitenFeld[i]+ "vWind = "+geschwindigkeitsFeld[i] +" km/h \t pWind = "+windenergieFeld[i] +" kW");
+        }
+
+    }
+
+}
+Antwort
+1
+2
+ Nächste
+
+
+
+Schreibe deine Antwort... und nutze den </> Button, wenn du Code posten möchtest...
+
+ Antwort erstellen
+Ähnliche Java Themen
+ 	Titel	Forum	Antworten	Datum
+Daten aus Datei einlesen	Java Basics - Anfänger-Themen	4	3. Jul 2017
+Datei mit Daten einlesen und höchsten wert der zweiten Spalte ermitteln	Java Basics - Anfänger-Themen	1	18. Dez 2014
+Daten aus anderen Dateien in neue Datei einlesen	Java Basics - Anfänger-Themen	3	20. Mai 2014
+Daten aus txt-datei einzeln nach Spalten einlesen	Java Basics - Anfänger-Themen	16	17. Jul 2006
+Daten zeilenweise aus Datei einlesen	Java Basics - Anfänger-Themen	7	9. Mai 2006
+Daten aus einer .csv Datei in einen Vector einlesen	Java Basics - Anfänger-Themen	3	19. Jan 2004
+Daten aus Import Datei auslesen und sortieren	Java Basics - Anfänger-Themen	2	6. Nov 2023
+Daten aus einer Datei in eine Liste speichern	Java Basics - Anfänger-Themen	23	21. Dez 2020
+Daten aus eigenständiger .class-Datei abrufen	Java Basics - Anfänger-Themen	1	25. Jan 2018
+Daten mit Apache POI in eine Excel Datei schreiben	Java Basics - Anfänger-Themen	5	12. Jun 2016
+JTable Daten aus txt datei	Java Basics - Anfänger-Themen	3	29. Mai 2016
+Daten von einer PHP Datei ablesen	Java Basics - Anfänger-Themen	1	20. Feb 2014
+csv-Datei auslesen und ausgelesene Daten in neue csv-Datei speichern	Java Basics - Anfänger-Themen	2	29. Nov 2013
+Input/Output Daten in Datei schreiben und auslesen	Java Basics - Anfänger-Themen	23	18. Nov 2012
+Text Datei Daten Auslesen und Schreiben	Java Basics - Anfänger-Themen	3	18. Dez 2011
+Input/Output Daten in txt-Datei schreiben - Fehlermeldung	Java Basics - Anfänger-Themen	7	27. Apr 2011
+Array Daten in Binär Datei schreiben/lesen	Java Basics - Anfänger-Themen	11	28. Apr 2010
+Daten in CSV Datei Speichern	Java Basics - Anfänger-Themen	3	7. Dez 2009
+Daten in eine Text datei schreiben !!!!	Java Basics - Anfänger-Themen	6	30. Aug 2009
+Programm mit Daten einer Datei testen	Java Basics - Anfänger-Themen	4	18. Feb 2009
+Speicherprobleme von daten in einer datei	Java Basics - Anfänger-Themen	5	6. Dez 2008
+JSP - Daten aus externer Datei auslesen und anzeigen	Java Basics - Anfänger-Themen	3	11. Okt 2008
+Daten aus einer JTable in eine .doc-word- datei exportieren?	Java Basics - Anfänger-Themen	7	24. Mrz 2008
+daten in datei suchen	Java Basics - Anfänger-Themen	3	14. Feb 2008
+Aus .txt Datei Daten in Array speichern	Java Basics - Anfänger-Themen	3	3. Okt 2007
+ausgabe von daten in txt/csv datei	Java Basics - Anfänger-Themen	5	4. Jul 2007
+Daten in Datei speichern	Java Basics - Anfänger-Themen	8	14. Jun 2007
+Daten in einer Datei überschreiben	Java Basics - Anfänger-Themen	13	17. Jan 2007
+Daten aus Datei auslesen	Java Basics - Anfänger-Themen	11	3. Mai 2006
+Falsche Daten aus Datei	Java Basics - Anfänger-Themen	2	28. Feb 2006
+StringTokenizer: Daten aus Datei auslesen	Java Basics - Anfänger-Themen	11	27. Okt 2004
+ObjectOutputStream -> Daten an Datei anhängen	Java Basics - Anfänger-Themen	3	16. Okt 2004
+Daten aus Datei lesen und in JTable anzeigen	Java Basics - Anfänger-Themen	49	8. Aug 2004
+Daten aus einer HashMap aus einer DB speichern und mit neuen Werten vergleichen	Java Basics - Anfänger-Themen	8	15. Mrz 2023
+Mady	Daten von JList & Combobox in JTable adden	Java Basics - Anfänger-Themen	2	10. Dez 2022
+Daten aus errechneter Methode in Datenbank(SQLite) schreiben	Java Basics - Anfänger-Themen	60	4. Dez 2022
+Daten in Echtzeit übernehmen	Java Basics - Anfänger-Themen	5	16. Nov 2022
+Java ArrayList speichert falsche Daten ab bzw. gibt falsche Daten aus?	Java Basics - Anfänger-Themen	42	12. Sep 2022
+H2 Datenbank starten / Daten in File speichern	Java Basics - Anfänger-Themen	25	2. Jul 2022
+Mehrere Daten/ Variablen Speichern	Java Basics - Anfänger-Themen	9	11. Mrz 2022
+fehlermeldung bei richtigen login daten	Java Basics - Anfänger-Themen	7	13. Jan 2022
+Java Funktion: externe Daten vom Internet einbinden	Java Basics - Anfänger-Themen	2	6. Jan 2022
+Schiebefix - ArrayList überschreibt Daten	Java Basics - Anfänger-Themen	3	14. Jun 2021
+Daten/Klassen/Packages richtig updaten!?	Java Basics - Anfänger-Themen	2	28. Mai 2021
+Wie gebe ich alle Daten zwischen zwei Zeitpunkten aus?	Java Basics - Anfänger-Themen	2	11. Jan 2021
+Tabellen- Daten laden	Java Basics - Anfänger-Themen	2	16. Sep 2020
+Klasse um daten zu einlesen	Java Basics - Anfänger-Themen	26	27. Apr 2020
+Literale für primitive Daten Typen	Java Basics - Anfänger-Themen	4	14. Mrz 2020
+Zwei Daten (Datum) miteinander vergleichen, abspeichern, laden	Java Basics - Anfänger-Themen	4	17. Okt 2019
+Daten auslesen/vergleichen	Java Basics - Anfänger-Themen	3	22. Aug 2019
+Sportwetten Daten Atomatisch analysieren um optimale Strategie zu erhalten	Java Basics - Anfänger-Themen	6	11. Aug 2019
+Java Daten in Excel speichern	Java Basics - Anfänger-Themen	1	4. Jun 2019
+Daten speichern, ohne Datenbank	Java Basics - Anfänger-Themen	8	9. Mai 2019
+Daten aus ArrayList in Datenbank durchsuchen	Java Basics - Anfänger-Themen	5	3. Mai 2019
+Shallty	Daten speichern und ändern?	Java Basics - Anfänger-Themen	32	30. Mrz 2019
+Sqlite table löschen und daten einfügen	Java Basics - Anfänger-Themen	5	28. Mrz 2019
+Binäre-Suche bei unsortierten Daten	Java Basics - Anfänger-Themen	7	23. Mrz 2019
+Was passiert wenn wir Daten auf der Festplatte abspeichern wollen? bzgl. BufferStreams	Java Basics - Anfänger-Themen	9	13. Jan 2019
+Daten von Objekten speichern	Java Basics - Anfänger-Themen	7	9. Jan 2019
+Minesweeper - Daten	Java Basics - Anfänger-Themen	46	1. Dez 2018
+Eingelesene Daten in Array(Liste) abspeichern?	Java Basics - Anfänger-Themen	18	3. Nov 2018
+Daten aus zwei Verschiedenen Tabellen in eine ArrayListe	Java Basics - Anfänger-Themen	4	29. Aug 2018
+WPS1000	Input/Output Wie aktiviere ich den Daten Transfer von der RS232 in meine Java Applikation	Java Basics - Anfänger-Themen	2	21. Aug 2018
+Eigenes Protokoll zur Übermittlung von Daten zum Webserver?	Java Basics - Anfänger-Themen	4	9. Jun 2018
+Reader wohin werden Daten gespeichert?	Java Basics - Anfänger-Themen	7	5. Jun 2018
+Erste Schritte CSV-File einlesen und Daten verarbeiten	Java Basics - Anfänger-Themen	5	2. Jun 2018
+Daten dem Super Aufruf übergeben	Java Basics - Anfänger-Themen	3	4. Jan 2018
+jTabel mit Daten Füllen	Java Basics - Anfänger-Themen	5	20. Dez 2017
+Wie erzeuge ich die Differenz von zwei Daten in Stunden??	Java Basics - Anfänger-Themen	2	8. Dez 2017
+Daten lesen und speichern	Java Basics - Anfänger-Themen	26	3. Dez 2017
+JTable mit Daten füllen	Java Basics - Anfänger-Themen	7	28. Nov 2017
+Java Programm zum Auswerten von Daten	Java Basics - Anfänger-Themen	11	31. Okt 2017
+Passwortmanager, Sicherheit der Daten	Java Basics - Anfänger-Themen	12	21. Aug 2017
+Best Practice Wie große "Tabellen" effizient durchsuchen und Daten händeln?	Java Basics - Anfänger-Themen	15	5. Jul 2017
+Best Practice Daten-Import /Trabsfomration aus Textdatei	Java Basics - Anfänger-Themen	12	28. Jun 2017
+JTable Suchfunktion mit SQL Daten	Java Basics - Anfänger-Themen	2	25. Jun 2017
+Daten gehen nicht in Datenbank	Java Basics - Anfänger-Themen	14	18. Jun 2017
+Erste Schritte Speichern von mehreren Daten	Java Basics - Anfänger-Themen	3	19. Apr 2017
+Daten einer Textdatei in ein JTable importieren.	Java Basics - Anfänger-Themen	3	29. Mrz 2017
+Daten von Thread an den aufrufenden zurückgeben	Java Basics - Anfänger-Themen	22	27. Mrz 2017
+Endlosschleife bei füllen von Daten im JTable	Java Basics - Anfänger-Themen	5	25. Feb 2017
+Erste Schritte Dedicated Server \ Senden und Empfangen von Daten/Befehlen	Java Basics - Anfänger-Themen	2	10. Feb 2017
+Probleme beim zykl. aktulisieren von Daten in JTable	Java Basics - Anfänger-Themen	3	3. Feb 2017
+NPE beim laden von Daten aus MySQL	Java Basics - Anfänger-Themen	9	29. Dez 2016
+Einlesen von Daten via BufferedReader	Java Basics - Anfänger-Themen	4	4. Nov 2016
+Methoden ausgelesene (CSV-) Daten in Liste einer anderen Klasse einlesen	Java Basics - Anfänger-Themen	0	22. Okt 2016
+Daten aus Excel-Tabelle in Java importieren	Java Basics - Anfänger-Themen	15	19. Sep 2016
+Http Post von mehreren Daten	Java Basics - Anfänger-Themen	5	2. Aug 2016
+Daten auf Webserver laden - wiederholen bei Fehler	Java Basics - Anfänger-Themen	0	22. Jul 2016
+Best Practice problemabhängige Persistentmachung von Daten	Java Basics - Anfänger-Themen	6	18. Jul 2016
+Daten von Internetseite auslesen	Java Basics - Anfänger-Themen	10	1. Jul 2016
+Daten/Formular per POST an Firefox/Browser senden	Java Basics - Anfänger-Themen	7	1. Jul 2016
+printf Daten aus der Tabelle in Excel übernehmen	Java Basics - Anfänger-Themen	5	4. Mai 2016
+zweidimensionales Array anlegen und mit DB-Daten füllen	Java Basics - Anfänger-Themen	14	31. Mrz 2016
+Einlesen von Daten	Java Basics - Anfänger-Themen	8	3. Jan 2016
+TableView zeigt keine Daten an	Java Basics - Anfänger-Themen	14	29. Okt 2015
+Daten im Programm speichern	Java Basics - Anfänger-Themen	14	22. Okt 2015
+Interface Daten einem Implementierten Interface zuweisen	Java Basics - Anfänger-Themen	37	13. Okt 2015
+Probleme mit CSV Daten	Java Basics - Anfänger-Themen	10	6. Okt 2015
+Arrays: Trennung von Daten und Darstellung	Java Basics - Anfänger-Themen	1	15. Mai 2015
+Aktuelle Jobs
+Java_Jobs
+Wafios Softwareentwickler Cloud (JAVA/Spring) m/w/d - Reutlingen
+Gestartet von Java_Jobs 7. Nov 2022 Antworten: 0
+Gewerbliche Stellenanzeigen
+Java_Jobs
+Inek Senior Java Softwareentwickler (m/w/d) - Siegburg
+Gestartet von Java_Jobs 24. Okt 2022 Antworten: 0
+Gewerbliche Stellenanzeigen
+Java_Jobs
+Atos Senior Java Architekt (m/w/d) - Fürth
+Gestartet von Java_Jobs 1. Jul 2022 Antworten: 0
+Gewerbliche Stellenanzeigen
+Java_Jobs
+Atos Java Developer (m/w/d) Fürth
+Gestartet von Java_Jobs 1. Jul 2022 Antworten: 0
+Gewerbliche Stellenanzeigen
+Java_Jobs
+FCA Bank Java-Entwickler (m/w/d) (Heilbronn)
+Gestartet von Java_Jobs 3. Mai 2022 Antworten: 0
+Gewerbliche Stellenanzeigen
+Neue Themen
+Zrebna
+Frage zu Test-Driven Development (TDD)
+Gestartet von Zrebna Sonntag um 14:01 Antworten: 1
+Java Basics - Anfänger-Themen
+Zrebna
+Wieso sollte man Null-Prüfungen nicht mit Optional-Objekten nutzen?
+Gestartet von Zrebna Sonntag um 13:40 Antworten: 11
+Allgemeine Java-Themen
+Java Kara geschweifte Klammern
+Gestartet von Oskar032 Sonntag um 12:41 Antworten: 2
+Java Basics - Anfänger-Themen
+Meine Datenbank lässt sich mit meiner Methode nicht ändern
+Gestartet von Mecki1 Sonntag um 02:54 Antworten: 1
+Datenbankprogrammierung
+Methode wird nicht überprüft
+Gestartet von Pianoman.20 Samstag um 22:06 Antworten: 3
+AWT, Swing, JavaFX & SWT
+Foren Java - Programmierung Java Basics - Anfänger-Themen 
+Werbung buchenImpressumDatenschutzerklärungKontakt aufnehmenBedingungen und RegelnHilfePartnerStartseiteRSS
+© 2024 Gemeinsam Java programmieren lernen - public static void ('Forum') class Java_Hilfe { int antwort != 'null' } return this
+Daten aus .txt Datei einlesen und weiterverarbeiten | Java - Hilfe | Java-Forum.org
+Ich wEiß

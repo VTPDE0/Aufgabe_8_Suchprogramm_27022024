@@ -1,3 +1,4 @@
+_____________________Grundprogramm
 1) Benutzereingabe
 - Benutzereingabe initiieren: Das Programm beginnt mit einer Nachricht an den Benutzer, in der er aufgefordert wird, den Suchbegriff einzugeben.
 - Eingabe lesen: Das Programm liest die Eingabe, die der Benutzer über die Tastatur macht.
@@ -15,3 +16,14 @@
 - Erweiterte Funktionen basierend auf Anforderungen:
     - Häufigkeitsanalyse bestimmter Wörter oder Phrasen: Neben dem Haupt-Suchbegriff kann es nützlich sein, auch die Häufigkeit anderer relevanter Wörter oder Phrasen zu analysieren.
     - Identifizierung und Analyse von Schlüsselwörtern: Bestimmte Schlüsselwörter könnten für die Analyse besonders relevant sein.
+_____________________Erweiterung von 27 02 2024
+1) Dateiauswahl
+2) Ignorieren von Groß- und Kleinschreibung
+3) Anzeige von Kontext
+____
+1) Dateiauswahl
+ - File ist Klasse in Java aus dem Paket java.io, die verwendet werden kann um zu überprüfen ob Datei existiert überhaupt
+2) Ignorieren von Groß- und Kleinschreibung
+ - Hier kann ich .toLowerCase() ODER .toUpperCase() nutzen um Suchbegriff und Beispieltext komplett zu Groß- oder Kleinbuchstaben umzuwandeln. Ich muss aber Haeufigkeitanalyse auch anpassen!
+3) um Kontext anzuzeigen, ich dachte erstmal, dass ich speiechere die Zeilen wo habe ich etwas gefunden in HashMap, aber dann ich habe mich auf andere Methode entschieden:
+Den ganzen Dokument in HashMap zu speichern und dann abrufen die Zeilen wo überstimmungen sind.
