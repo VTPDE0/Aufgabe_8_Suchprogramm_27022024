@@ -7,6 +7,8 @@ public class Main {
     public static void main(String[] args) {
 
         //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
 
         String currentDirectory = System.getProperty("user.dir");
         System.out.println("________________________________________________________");
@@ -15,10 +17,14 @@ public class Main {
         //Pfad für Testzwecke C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/Beispieltext.txt
 
         //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
 
         Benutzereingabe pfad_zu_Datei_Eingabe = new Benutzereingabe();
         String pfad_zu_Datei = pfad_zu_Datei_Eingabe.leseDateipfad();
 
+        //_____________________________________________
+        //_____________________________________________
         //_____________________________________________
 
         Benutzereingabe eingabe = new Benutzereingabe();
@@ -26,7 +32,8 @@ public class Main {
         String suchbegriff = eingabe.leseSuchbegriff();
 
         //_____________________________________________
-
+        //_____________________________________________
+        //_____________________________________________
 
         Suchfunktion suche = new Suchfunktion(pfad_zu_Datei);
         //try catch verwendet man wenn man den Fall erwartet, wenn Fehler rauskommen kann. z.B. in meinem Fall Datei existiert nicht oder Pfad ist falsch = Fehler
@@ -42,6 +49,8 @@ public class Main {
         }
 
         //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
 
         Textanalyse zeilenRechner = new Textanalyse(pfad_zu_Datei);
         try {
@@ -51,6 +60,8 @@ public class Main {
             System.out.println("Datei nicht gefunden.");
         }
 
+        //_____________________________________________
+        //_____________________________________________
         //_____________________________________________
 
         Textanalyse woerterZaehler = new Textanalyse(pfad_zu_Datei);
@@ -63,6 +74,8 @@ public class Main {
         }
 
         //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
 
         Textanalyse buchstabenZaehler = new Textanalyse(pfad_zu_Datei);
         try {
@@ -73,6 +86,8 @@ public class Main {
             System.out.println("Datei nicht gefunden.");
         }
 
+        //_____________________________________________
+        //_____________________________________________
         //_____________________________________________
 
         Textanalyse zaehleSuchbegriffHaeufigkeit = new Textanalyse(pfad_zu_Datei);
@@ -86,14 +101,32 @@ public class Main {
         }
 
         //_____________________________________________
-        try {
-        Suchfunktion_mit_Kontextanzeige methode_suchfunktion_mit_kontextanzeige = new Suchfunktion_mit_Kontextanzeige(pfad_zu_Datei);
+        //_____________________________________________
+        //_____________________________________________
 
-            methode_suchfunktion_mit_kontextanzeige.suche_mit_Kontexanzeige(suchbegriff);
+        try {
+        Suchfunktion_mit_Kontextanzeige methode_suchfunktionMitKontextanzeige = new Suchfunktion_mit_Kontextanzeige(pfad_zu_Datei);
+
+            methode_suchfunktionMitKontextanzeige.suche_mit_Kontexanzeige(suchbegriff);
         } catch (FileNotFoundException e){
             System.out.println("Datei nicht gefunden.");
         }
+
+        //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
+
+        BuchstabenWahrscheinlichkeit buchstabenAnalyse = new BuchstabenWahrscheinlichkeit(pfad_zu_Datei);
+
+        try {
+            // Вызов метода для анализа и расчета вероятности букв
+            buchstabenAnalyse.berechneBuchstabenWahrscheinlichkeit();
+        } catch (FileNotFoundException e) {
+            System.out.println("Die Datei " + pfad_zu_Datei + " wurde nicht gefunden.");
+        }
+
     }
+
 
 
 /*   am beste ich nutze doch die Klassen, hier aufrufe ich die Methoden nur*/

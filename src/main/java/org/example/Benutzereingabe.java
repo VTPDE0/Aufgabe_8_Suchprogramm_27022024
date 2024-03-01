@@ -12,6 +12,7 @@ public class Benutzereingabe {
     public String leseSuchbegriff() {
         System.out.println("______________________________________");
         System.out.println("Bitte geben Sie einen Suchbegriff ein:");
+        System.out.println("(z.B. ein Wort 'Ziel' oder Ausdruck 'Ich weiß'. Egal groß oder klein)");
         return scanner.nextLine();
     }
 

@@ -1,4 +1,31 @@
-_____________________Grundprogramm
+______________________________________________________________________________________________________________________________
+_____________________Erweiterung von 29 02 2024
+____Aufgaben
+1) Wahrscheinlichkeiten ausrechnen
+2) Regex-Suche
+3) Indexierung
+____Ideen und Verlauf
+1) Hier mache ich ähnlich wie früher mit Zeilen - speichere alles in HashMap um weiter abrufen zu können, so werde ich alle Buchstaben ablesen, speichern und Wahrscheinlichkeit berechnen können.
+    -ich erzeuge neue Klasse dafür
+2) Das könnte ich mit Pattern und Matcher lösen. Muss erstmal lernen was ist das und wie kann man das nutzen.
+3) Das habe ich teilweise schon in Klasse Suchfunktion_mit_Kontextanzeige mit Zeilennummerierung implementiert, aber es muss noch upgraded werden, da Position innerhalb Zeile muss auch angezeigt werden
+
+______________________________________________________________________________________________________________________________
+_____________________Erweiterung von 27 02 2024
+1) Dateiauswahl
+2) Ignorieren von Groß- und Kleinschreibung
+3) Anzeige von Kontext
+____
+1) Dateiauswahl (im Klasse Benutzereingabe)
+ - File ist Klasse in Java aus dem Paket java.io, die verwendet werden kann um zu überprüfen ob Datei existiert überhaupt
+2) Ignorieren von Groß- und Kleinschreibung (im Klasse Suchfunktion dank toLowerCase())
+ - Hier kann ich .toLowerCase() ODER .toUpperCase() nutzen um Suchbegriff und Beispieltext komplett zu Groß- oder Kleinbuchstaben umzuwandeln. Ich muss aber Haeufigkeitanalyse auch anpassen!
+3) Kontext (neue Klasse Suchfunktion_mit_Kontextanzeige)
+um Kontext anzuzeigen, ich dachte erstmal, dass ich speiechere die Zeilen, wo habe ich etwas gefunden, in HashMap, aber dann ich habe mich auf andere Methode entschieden:
+Den ganzen Dokument in HashMap zu speichern und dann abrufen die Zeilen wo überstimmungen sind.
+
+______________________________________________________________________________________________________________________________
+_____________________Grundprogramm von 26 02 2024
 1) Benutzereingabe
 - Benutzereingabe initiieren: Das Programm beginnt mit einer Nachricht an den Benutzer, in der er aufgefordert wird, den Suchbegriff einzugeben.
 - Eingabe lesen: Das Programm liest die Eingabe, die der Benutzer über die Tastatur macht.
@@ -16,14 +43,3 @@ _____________________Grundprogramm
 - Erweiterte Funktionen basierend auf Anforderungen:
     - Häufigkeitsanalyse bestimmter Wörter oder Phrasen: Neben dem Haupt-Suchbegriff kann es nützlich sein, auch die Häufigkeit anderer relevanter Wörter oder Phrasen zu analysieren.
     - Identifizierung und Analyse von Schlüsselwörtern: Bestimmte Schlüsselwörter könnten für die Analyse besonders relevant sein.
-_____________________Erweiterung von 27 02 2024
-1) Dateiauswahl
-2) Ignorieren von Groß- und Kleinschreibung
-3) Anzeige von Kontext
-____
-1) Dateiauswahl
- - File ist Klasse in Java aus dem Paket java.io, die verwendet werden kann um zu überprüfen ob Datei existiert überhaupt
-2) Ignorieren von Groß- und Kleinschreibung
- - Hier kann ich .toLowerCase() ODER .toUpperCase() nutzen um Suchbegriff und Beispieltext komplett zu Groß- oder Kleinbuchstaben umzuwandeln. Ich muss aber Haeufigkeitanalyse auch anpassen!
-3) um Kontext anzuzeigen, ich dachte erstmal, dass ich speiechere die Zeilen wo habe ich etwas gefunden in HashMap, aber dann ich habe mich auf andere Methode entschieden:
-Den ganzen Dokument in HashMap zu speichern und dann abrufen die Zeilen wo überstimmungen sind.
