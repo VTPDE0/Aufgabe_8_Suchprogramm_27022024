@@ -2,31 +2,41 @@ package org.example;
 import java.io.FileNotFoundException;
 import java.lang.System;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+
         //_____________________________________________
         //_____________________________________________
         //_____________________________________________
 
-        String currentDirectory = System.getProperty("user.dir");
+        /*String currentDirectory = System.getProperty("user.dir");
         System.out.println("________________________________________________________");
         System.out.println("Das aktuelle Arbeitsverzeichnis ist: " + currentDirectory);
-
+*/
         //Pfad für Testzwecke C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/Beispieltext.txt
+        //BeispieltextInDatei.txt
 
         //_____________________________________________
         //_____________________________________________
         //_____________________________________________
 
-        Benutzereingabe pfad_zu_Datei_Eingabe = new Benutzereingabe();
-        String pfad_zu_Datei = pfad_zu_Datei_Eingabe.leseDateipfad();
+//        Benutzereingabe pfad_zu_Datei_Eingabe = new Benutzereingabe();
+//        String pfad_zu_Datei = pfad_zu_Datei_Eingabe.leseDateipfad();
+
+
+
+//        String pfad_zu_Datei = "C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/Beispieltext.txt";
+        String pfad_zu_Datei = "BeispieltextInDatei.txt";
 
         //_____________________________________________
         //_____________________________________________
         //_____________________________________________
-
         Benutzereingabe eingabe = new Benutzereingabe();
         //hier speichern wir in Variable suchbegriff alles, was User eingibt mithilfe Methode aus Benutzereingabe Klasse "leseSuchbegriff"
         String suchbegriff = eingabe.leseSuchbegriff();
@@ -119,11 +129,41 @@ public class Main {
         BuchstabenWahrscheinlichkeit buchstabenAnalyse = new BuchstabenWahrscheinlichkeit(pfad_zu_Datei);
 
         try {
-            // Вызов метода для анализа и расчета вероятности букв
             buchstabenAnalyse.berechneBuchstabenWahrscheinlichkeit();
         } catch (FileNotFoundException e) {
             System.out.println("Die Datei " + pfad_zu_Datei + " wurde nicht gefunden.");
         }
+
+        //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
+        Benutzereingabe regexEingabe = new Benutzereingabe();
+        String regex = regexEingabe.leseSuchbegriffFuerRegexSuche(); // Nutzen Sie eine Methode, die den Benutzer auffordert, einen regulären Ausdruck einzugeben
+
+        SucheMitRegex regexSuche = new SucheMitRegex(pfad_zu_Datei);
+        try {
+            boolean gefunden = regexSuche.sucheMitRegex(regex);
+            if (!gefunden) {
+                System.out.println("Keine Übereinstimmungen gefunden.");
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Datei nicht gefunden.");
+        }
+
+            //_____________________________________________
+            //_____________________________________________
+            //_____________________________________________
+
+
+            if (suchbegriff.equalsIgnoreCase("exit")) {
+                System.out.println("Programm wird beendet...");
+                break;
+            }
+        }
+
+        //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
 
     }
 
