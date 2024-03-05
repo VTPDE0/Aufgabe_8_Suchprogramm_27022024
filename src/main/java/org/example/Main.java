@@ -15,7 +15,10 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
 
-        /*String currentDirectory = System.getProperty("user.dir");
+        /*
+        für Testzwecke auskommentiert und Dateipfad vordefiniert
+
+        String currentDirectory = System.getProperty("user.dir");
         System.out.println("________________________________________________________");
         System.out.println("Das aktuelle Arbeitsverzeichnis ist: " + currentDirectory);
 */
@@ -37,7 +40,7 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
         //_____________________________________________
-        Benutzereingabe eingabe = new Benutzereingabe();
+        Benutzereingabe eingabe = new Benutzereingabe(scanner);
         //hier speichern wir in Variable suchbegriff alles, was User eingibt mithilfe Methode aus Benutzereingabe Klasse "leseSuchbegriff"
         String suchbegriff = eingabe.leseSuchbegriff();
 
@@ -137,7 +140,7 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
         //_____________________________________________
-        Benutzereingabe regexEingabe = new Benutzereingabe();
+        Benutzereingabe regexEingabe = new Benutzereingabe(scanner);
         String regex = regexEingabe.leseSuchbegriffFuerRegexSuche(); // Nutzen Sie eine Methode, die den Benutzer auffordert, einen regulären Ausdruck einzugeben
 
         SucheMitRegex regexSuche = new SucheMitRegex(pfad_zu_Datei);

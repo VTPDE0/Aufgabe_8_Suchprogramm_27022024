@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class Benutzereingabe {
     private Scanner scanner;
 
-    public Benutzereingabe() {
-        scanner = new Scanner(System.in);
+    public Benutzereingabe(Scanner scanner) {
+        this.scanner = scanner;
     }
 
 
