@@ -1,29 +1,26 @@
 package org.example;
-import org.example.Suchfunktion;
-import java.io.FileNotFoundException;
 
-public class SuchfunktionTask implements Runnable {
-    private Suchfunktion suchfunktion;
+import java.util.concurrent.Callable;
+import java.io.File;
+import java.util.Scanner;
+
+public class SuchfunktionTask implements Callable<Boolean> {
+    private String dateipfad;
     private String suchbegriff;
 
-    // Конструктор принимает путь к файлу и поисковый запрос
     public SuchfunktionTask(String dateipfad, String suchbegriff) {
-        this.suchfunktion = new Suchfunktion(dateipfad);
+        this.dateipfad = dateipfad;
         this.suchbegriff = suchbegriff;
     }
 
-    // В методе run() вызываем метод sucheNachBegriff класса Suchfunktion
     @Override
-    public void run() {
-        try {
-            boolean gefunden = suchfunktion.sucheNachBegriff(suchbegriff);
-            if (gefunden) {
-                System.out.println("Der Suchbegriff '" + suchbegriff + "' wurde gefunden.");
-            } else {
-                System.out.println("Der Suchbegriff '" + suchbegriff + "' wurde nicht gefunden.");
+    public Boolean call() throws Exception {
+        Scanner dateiScanner = new Scanner(new File(dateipfad));
+        while (dateiScanner.hasNextLine()) {
+            if (dateiScanner.nextLine().toLowerCase().contains(suchbegriff.toLowerCase())) {
+                return true;
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("Datei wurde nicht gefunden: " + e.getMessage());
         }
+        return false;
     }
 }

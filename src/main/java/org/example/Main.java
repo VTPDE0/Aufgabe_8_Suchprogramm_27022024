@@ -1,10 +1,8 @@
 package org.example;
 import java.io.FileNotFoundException;
 import java.lang.System;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -160,29 +158,56 @@ public class Main {
             //_____________________________________________
 //        while (true) {
 
-            String[] dateipfade = {"BeispieltextInDatei.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei_3.txt"};
-            String suchbegriffFürParalleleSuche = "qwert";
+        String[] dateipfade = {"BeispieltextInDatei.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei_3.txt"};
+        String suchbegriffFürParalleleSuche = suchbegriff;
+        ExecutorService executor = Executors.newFixedThreadPool(dateipfade.length);
+        List<Future<Boolean>> futures = new ArrayList<>();
 
-            for (String dateipfad : dateipfade) {
-                SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
-                Thread thread = new Thread(task);
-                thread.start();
-            }
+        for (String dateipfad : dateipfade) {
+            Callable<Boolean> task = new SuchfunktionTask(dateipfad, suchbegriff);
+            Future<Boolean> future = executor.submit(task);
+            futures.add(future);
+        }
 
-            //_____________________________________________
-            //_____________________________________________
-            //_____________________________________________
-            /*if (suchbegriff.equalsIgnoreCase("exit")) {
+        executor.shutdown();
+        boolean finished = false;
+        try {
+            finished = executor.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (finished) {
+            boolean atLeastOneFound = futures.stream().anyMatch(future -> {
+                try {
+                    return future.get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            });
+
+            System.out.println("Mindestens eine Datei enthält Suchbegriff: " + atLeastOneFound);
+        } else {
+            System.out.println("Die Suche war nicht schnellgenug erledigt.");
+        }
+
+
+
+        //_____________________________________________
+        //_____________________________________________
+        //_____________________________________________
+        /*if (suchbegriff.equalsIgnoreCase("exit")) {
                 System.out.println("Programm wird beendet...");
                 break;
             }*/
-        }
-
-        //_____________________________________________
-        //_____________________________________________
-        //_____________________________________________
-
     }
+
+    //_____________________________________________
+    //_____________________________________________
+    //_____________________________________________
+
+}
 
 
 

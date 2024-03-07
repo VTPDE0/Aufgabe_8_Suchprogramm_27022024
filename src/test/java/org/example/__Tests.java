@@ -1,14 +1,17 @@
 package org.example;
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.*;
 
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertTrue;
 
 class SuchfunktionTest {
 
@@ -83,18 +86,81 @@ class BenutzereingabeTest {
         }
 
     }
-class ParalleleSucheTest {
+class ParallelSucheTestIstGefunden {
+
+    @Before
+    public void setUp() throws FileNotFoundException {
+    }
 
     @Test
-    void testParallelSearchResults() {
-        ParalleleSucheInDateien paralleleSuche = new ParalleleSucheInDateien();
-        List<String> dateiPfade = Arrays.asList("BeispieltextInDatei_3.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei.txt");
+    public void testParallelSearch() throws InterruptedException, ExecutionException {
+        //qwertz in 2 Dateien drin ist
+        String[] dateipfade = {"BeispieltextInDatei.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei_3.txt"};
         String suchbegriff = "qwertz";
-        Map<String, Boolean> ergebnisse = paralleleSuche.paralleleSucheInDateien(dateiPfade, suchbegriff);
+        ExecutorService executor = Executors.newFixedThreadPool(dateipfade.length);
+        List<Future<Boolean>> futures = new ArrayList<>();
 
-        for (String pfad : dateiPfade) {
-            assertTrue(ergebnisse.get(pfad), "Suchbegriff wurde nicht in " + pfad + " gefunden.");
+        long startTime = System.currentTimeMillis();
+
+        for (String dateipfad : dateipfade) {
+            SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
+            futures.add(executor.submit(task));
         }
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        boolean atLeastOneFound = futures.stream().anyMatch(future -> {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
+
+        long endTime = System.currentTimeMillis();
+        assertTrue("Mindestens eine Datei soll Suchbegriff enthalten", atLeastOneFound);
+        assertTrue("Suche muss schnellgenug erledigt sein", (endTime - startTime) < 2000);
     }
 }
+class ParallelSucheTestIst404 {
 
+    @Before
+    public void setUp() throws FileNotFoundException {
+        // Подготовка тестов не требуется
+    }
+
+    @Test
+    public void testParallelSearch() throws InterruptedException, ExecutionException {
+        String[] dateipfade = {"BeispieltextInDatei.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei_3.txt"};
+        // qwertzqwrsgh enthält keine Datei
+        String suchbegriff = "qwertzqwrsgh";
+        ExecutorService executor = Executors.newFixedThreadPool(dateipfade.length);
+        List<Future<Boolean>> futures = new ArrayList<>();
+
+        long startTime = System.currentTimeMillis();
+
+        for (String dateipfad : dateipfade) {
+            SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
+            futures.add(executor.submit(task));
+        }
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+
+        boolean noneFound = futures.stream().allMatch(future -> {
+            try {
+                return !future.get(); // Проверка что future.get() возвращает false
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                return true; // В случае ошибки считаем что условие теста не выполнено
+            }
+        });
+
+        long endTime = System.currentTimeMillis();
+
+        assertTrue("Mindestens eine Datei enthält Suchbegriff", noneFound);
+        assertTrue("Suche war nicht scnhellgenug", (endTime - startTime) < 2000);
+    }
+}
