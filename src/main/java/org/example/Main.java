@@ -1,7 +1,9 @@
 package org.example;
 import java.io.FileNotFoundException;
 import java.lang.System;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -9,7 +11,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+
 
         //_____________________________________________
         //_____________________________________________
@@ -48,7 +50,7 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
 
-        Suchfunktion suche = new Suchfunktion(pfad_zu_Datei);
+/*        Suchfunktion suche = new Suchfunktion(pfad_zu_Datei);
         //try catch verwendet man wenn man den Fall erwartet, wenn Fehler rauskommen kann. z.B. in meinem Fall Datei existiert nicht oder Pfad ist falsch = Fehler
         try {
             boolean gefunden = suche.sucheNachBegriff(suchbegriff);
@@ -151,17 +153,29 @@ public class Main {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Datei nicht gefunden.");
-        }
+        }*/
 
             //_____________________________________________
             //_____________________________________________
             //_____________________________________________
+//        while (true) {
 
+            String[] dateipfade = {"BeispieltextInDatei.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei_3.txt"};
+            String suchbegriffFürParalleleSuche = "qwert";
 
-            if (suchbegriff.equalsIgnoreCase("exit")) {
+            for (String dateipfad : dateipfade) {
+                SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
+                Thread thread = new Thread(task);
+                thread.start();
+            }
+
+            //_____________________________________________
+            //_____________________________________________
+            //_____________________________________________
+            /*if (suchbegriff.equalsIgnoreCase("exit")) {
                 System.out.println("Programm wird beendet...");
                 break;
-            }
+            }*/
         }
 
         //_____________________________________________
@@ -173,5 +187,5 @@ public class Main {
 
 
 /*   am beste ich nutze doch die Klassen, hier aufrufe ich die Methoden nur*/
-}
+//}
 

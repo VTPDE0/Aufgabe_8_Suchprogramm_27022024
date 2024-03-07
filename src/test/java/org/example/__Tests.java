@@ -2,8 +2,8 @@ package org.example;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
+
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
@@ -81,5 +81,20 @@ class BenutzereingabeTest {
             boolean ergebnis = sucheMitRegex.sucheMitRegex("\\bHund\\b");
             Assertions.assertFalse(ergebnis);
         }
+
     }
+class ParalleleSucheTest {
+
+    @Test
+    void testParallelSearchResults() {
+        ParalleleSucheInDateien paralleleSuche = new ParalleleSucheInDateien();
+        List<String> dateiPfade = Arrays.asList("BeispieltextInDatei_3.txt", "BeispieltextInDatei_2.txt", "BeispieltextInDatei.txt");
+        String suchbegriff = "qwertz";
+        Map<String, Boolean> ergebnisse = paralleleSuche.paralleleSucheInDateien(dateiPfade, suchbegriff);
+
+        for (String pfad : dateiPfade) {
+            assertTrue(ergebnisse.get(pfad), "Suchbegriff wurde nicht in " + pfad + " gefunden.");
+        }
+    }
+}
 
