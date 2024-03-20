@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Benutzereingabe {
     private Scanner scanner;
-
+    /* Konstruktor, der den Scanner als Parameter akzeptiert. */
     public Benutzereingabe(Scanner scanner) {
         this.scanner = scanner;
     }

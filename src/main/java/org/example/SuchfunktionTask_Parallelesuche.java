@@ -4,11 +4,11 @@ import java.util.concurrent.Callable;
 import java.io.File;
 import java.util.Scanner;
 
-public class SuchfunktionTask implements Callable<Boolean> {
+public class SuchfunktionTask_Parallelesuche implements Callable<Boolean> {
     private String dateipfad;
     private String suchbegriff;
 
-    public SuchfunktionTask(String dateipfad, String suchbegriff) {
+    public SuchfunktionTask_Parallelesuche(String dateipfad, String suchbegriff) {
         this.dateipfad = dateipfad;
         this.suchbegriff = suchbegriff;
     }

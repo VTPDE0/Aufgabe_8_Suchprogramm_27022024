@@ -15,13 +15,11 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
 
-        /*
-        für Testzwecke auskommentiert und Dateipfad vordefiniert
+//        für Testzwecke auskommentiert und Dateipfad vordefiniert
 
         String currentDirectory = System.getProperty("user.dir");
         System.out.println("________________________________________________________");
         System.out.println("Das aktuelle Arbeitsverzeichnis ist: " + currentDirectory);
-*/
         //Pfad für Testzwecke C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/Beispieltext.txt
         //BeispieltextInDatei.txt
 
@@ -29,13 +27,13 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
 
-//        Benutzereingabe pfad_zu_Datei_Eingabe = new Benutzereingabe();
-//        String pfad_zu_Datei = pfad_zu_Datei_Eingabe.leseDateipfad();
+        Benutzereingabe pfad_zu_Datei_Eingabe = new Benutzereingabe(scanner);
+        String pfad_zu_Datei = pfad_zu_Datei_Eingabe.leseDateipfad();
 
 
 
 //        String pfad_zu_Datei = "C:/Users/VolodymyrTeperyk/OneDrive - ORDIX AG/Desktop/Beispieltext.txt";
-        String pfad_zu_Datei = "BeispieltextInDatei.txt";
+//        String pfad_zu_Datei = "BeispieltextInDatei.txt";
 
         //_____________________________________________
         //_____________________________________________
@@ -48,8 +46,8 @@ public class Main {
         //_____________________________________________
         //_____________________________________________
 
-/*        Suchfunktion suche = new Suchfunktion(pfad_zu_Datei);
-        //try catch verwendet man wenn man den Fall erwartet, wenn Fehler rauskommen kann. z.B. in meinem Fall Datei existiert nicht oder Pfad ist falsch = Fehler
+        Suchfunktion suche = new Suchfunktion(pfad_zu_Datei);
+        //try catch verwendet man, wenn man den Fall erwartet, wenn Fehler rauskommen kann. z.B. in meinem Fall Datei existiert nicht oder Pfad ist falsch = Fehler
         try {
             boolean gefunden = suche.sucheNachBegriff(suchbegriff);
             if (gefunden) {
@@ -151,7 +149,7 @@ public class Main {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Datei nicht gefunden.");
-        }*/
+        }
 
             //_____________________________________________
             //_____________________________________________
@@ -164,7 +162,7 @@ public class Main {
         List<Future<Boolean>> futures = new ArrayList<>();
 
         for (String dateipfad : dateipfade) {
-            Callable<Boolean> task = new SuchfunktionTask(dateipfad, suchbegriff);
+            Callable<Boolean> task = new SuchfunktionTask_Parallelesuche(dateipfad, suchbegriff);
             Future<Boolean> future = executor.submit(task);
             futures.add(future);
         }
@@ -186,7 +184,8 @@ public class Main {
                     return false;
                 }
             });
-
+            System.out.println("______________________________________________________");
+            System.out.println("Parallele Suche:");
             System.out.println("Mindestens eine Datei enthält Suchbegriff: " + atLeastOneFound);
         } else {
             System.out.println("Die Suche war nicht schnellgenug erledigt.");

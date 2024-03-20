@@ -50,7 +50,7 @@ class BuchstabenWahrscheinlichkeitTest {
         HashMap<Character, Integer> buchstabenHaeufigkeit = buchstabenWahrscheinlichkeit.zaehleBuchstabenHaeufigkeit();
 
         int erwarteteAnzahlVonZs = 13; // Ich habe genau 13 Buchstaben 'Z' in DAtei manuell gelassen, andere habe gelöscht.
-        Assertions.assertTrue(buchstabenHaeufigkeit.containsKey('z'), "Das Dokument enthält keinen Buchstaben 'z'.");
+        Assertions.assertTrue(buchstabenHaeufigkeit.containsKey('z'), "Das Dokument enthält 13 Buchstaben 'z'.");
         Assertions.assertEquals(erwarteteAnzahlVonZs, buchstabenHaeufigkeit.get('z').intValue(), "Die Häufigkeit des Buchstabens 'z' stimmt nicht mit der erwarteten Anzahl überein.");
     }
 }
@@ -67,7 +67,7 @@ class BenutzereingabeTest {
         assertEquals("Ziel", suchbegriff);
     }
 }
-    class SucheMitRegexTest {
+class SucheMitRegexTest {
 
         @Test
         public void testRegexSearchFunctionality_Positive() throws FileNotFoundException {
@@ -79,7 +79,7 @@ class BenutzereingabeTest {
 
         @Test
         public void testRegexSearchFunctionality_Negative() throws FileNotFoundException {
-            // Annahme: 'BeispieltextInDatei.txt' enthält das Wort "Katze" nicht
+            // Annahme: 'BeispieltextInDatei.txt' enthält das Wort "Hund" nicht
             SucheMitRegex sucheMitRegex = new SucheMitRegex("BeispieltextInDatei.txt");
             boolean ergebnis = sucheMitRegex.sucheMitRegex("\\bHund\\b");
             Assertions.assertFalse(ergebnis);
@@ -103,7 +103,7 @@ class ParallelSucheTestIstGefunden {
         long startTime = System.currentTimeMillis();
 
         for (String dateipfad : dateipfade) {
-            SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
+            SuchfunktionTask_Parallelesuche task = new SuchfunktionTask_Parallelesuche(dateipfad, suchbegriff);
             futures.add(executor.submit(task));
         }
 
@@ -142,7 +142,7 @@ class ParallelSucheTestIst404 {
         long startTime = System.currentTimeMillis();
 
         for (String dateipfad : dateipfade) {
-            SuchfunktionTask task = new SuchfunktionTask(dateipfad, suchbegriff);
+            SuchfunktionTask_Parallelesuche task = new SuchfunktionTask_Parallelesuche(dateipfad, suchbegriff);
             futures.add(executor.submit(task));
         }
 

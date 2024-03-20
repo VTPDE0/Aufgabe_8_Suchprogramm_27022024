@@ -1,6 +1,7 @@
 package org.example;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -29,8 +30,11 @@ public class BuchstabenWahrscheinlichkeit {
         HashMap<Character, Integer> haeufigkeit = zaehleBuchstabenHaeufigkeit();
         int gesamtBuchstaben = haeufigkeit.values().stream().mapToInt(Integer::intValue).sum();
         haeufigkeit.forEach((buchstabe, anzahl) -> {
-            double wahrscheinlichkeit = 100.0 * anzahl / gesamtBuchstaben;
-            System.out.println("Buchstabe '" + buchstabe + "' erscheint " + anzahl + " Mal im Dokument, Wahrscheinlichkeit: " + wahrscheinlichkeit + "%.");
+            // DecimalFormat ist hier um Zahlenanzahl nach der Komma im Format #.### auszugeben
+            DecimalFormat decimalFormat = new DecimalFormat( "#.###" );
+            String wahrscheinlichkeit = decimalFormat.format(100.0 * anzahl / gesamtBuchstaben);
+
+            System.out.println("Buchstabe '" + buchstabe + "' erscheint " + anzahl + " Mal im Dokument, Wahrscheinlichkeit: " + wahrscheinlichkeit + " %.");
         });
     }
 
